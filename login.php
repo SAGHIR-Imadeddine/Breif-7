@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Verify the hashed password
         if ($password === $row['pass']) {
             // Start a session and store user information
-            $_SESSION['id'] = $row['id'];
+            $_SESSION['id'] = $row['id_user'];
             $_SESSION['image'] = $row['image'];
             $_SESSION['firstName'] = $row['firstName'];
             $_SESSION['lastName'] = $row['lastName'];

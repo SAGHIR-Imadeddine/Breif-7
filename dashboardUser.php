@@ -5,7 +5,7 @@ session_start();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" contents="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
@@ -203,7 +203,7 @@ session_start();
                 // Check if the user is logged in
                     // User is logged in
                     $equipeID = $_SESSION['equipeID'];
-                    $sql = "SELECT * FROM teams WHERE id = $equipeID";
+                    $sql = "SELECT * FROM teams WHERE id_team = $equipeID";
                     
                     $result = $conn->query($sql);
 
@@ -214,7 +214,7 @@ session_start();
                         $projectID = $row['projectID'];
                         $scrumMasterID = $row['scrumMasterID'];
 
-                        $scrumMasterQuery = "SELECT * FROM users WHERE id = $scrumMasterID";
+                        $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $scrumMasterID";
                         $scrumMasterResult = $conn->query($scrumMasterQuery);
 
                         if ($scrumMasterResult->num_rows > 0) {
@@ -263,12 +263,12 @@ session_start();
                 <h1 class="text-3xl text-black pb-6 col-span-3">Your projects</h1>
 
                 <?php
-                    include 'connection.php';
+                  
 
                     // Check if the user is logged in
                     // User is logged in
                     $equipeID = $_SESSION['equipeID'];
-                    $sql = "SELECT projectID FROM teams WHERE id = $equipeID";
+                    $sql = "SELECT projectID FROM teams WHERE id_team = $equipeID";
 
                     $result = $conn->query($sql);
 
@@ -276,7 +276,7 @@ session_start();
                         $projectID = $row['projectID'];
                         $currentMemberID = $_SESSION['id'];
 
-                        $projectsQuery = "SELECT * FROM projects WHERE id = $projectID";
+                        $projectsQuery = "SELECT * FROM projects WHERE id_project = $projectID";
                         $projectsResult = $conn->query($projectsQuery);
 
                         if ($projectsResult->num_rows > 0) {
@@ -290,7 +290,7 @@ session_start();
                                 $projectsDateEnd = $projectsData['date_end'];
                                 $projectsStatus = $projectsData['statut'];
 
-                                $scrumMasterQuery = "SELECT * FROM users WHERE id = $projectsScrum";
+                                $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $projectsScrum";
                                 $scrumMasterResult = $conn->query($scrumMasterQuery);
 
                                 if ($scrumMasterResult->num_rows > 0) {
@@ -304,7 +304,7 @@ session_start();
                                     $scrumMasterLastName = 'N/A';
                                 }
 
-                                $prodMasterQuery = "SELECT * FROM users WHERE id = $projectsProd";
+                                $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
                                 $prodMasterResult = $conn->query($prodMasterQuery);
 
                                 if ($prodMasterResult->num_rows > 0) {
@@ -343,6 +343,7 @@ session_start();
                                 echo '</svg>';
                                 echo '</div>';
                                 echo '<div class="flex flex-col items-center">';
+                                echo"   <a href='#' class='p-2 w-fit h-fit text-center text-black text-xs font-medium bg-green-400 rounded-full'><button>+ QUESTION</button></a>";
                                 echo "<p class='text-gray-500'>$projectsDateStart</p>";
                                 echo "<p class='text-gray-500'>$projectsDateEnd</p>";
                                 if ($projectsStatus == 'Active') {
@@ -358,13 +359,13 @@ session_start();
                     }
                     ?>
             </main>
-
+<p>Poser une Question</p>
             <main class="w-full grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-5 p-6 justify-center items-center hidden gap-5" id = "MembersTable">
                 <h1 class="text-3xl text-black pb-6 col-span-1 md:col-span-2 lg:col-span-5">Members</h1>
                 <?php
                     include 'connection.php';
                     $equipeID = $_SESSION['equipeID'];
-                    $sql = "SELECT * FROM teams WHERE id = $equipeID";
+                    $sql = "SELECT * FROM teams WHERE id_team = $equipeID";
                     
                     $result = $conn->query($sql);
 
@@ -372,7 +373,7 @@ session_start();
                         $teamImg = $row['image'];
                         $teamName = $row['teamName'];
                         $scrumMasterID = $row['scrumMasterID'];
-                        $teamId = $row['id'];
+                        $teamId = $row['id_team'];
 
                         echo '
                             <div class="w-full h-48 col-span-1 md:col-span-2 lg:col-span-5 bg-white border border-gray-200 rounded-lg shadow sticky top-0" style = "background-image: url(' . $teamImg . '); background-position-x: center; background-position-y: 20%; background-repeat: no-repeat; background-size: cover;">
@@ -441,14 +442,14 @@ session_start();
                 // Check if the user is logged in
                     // User is logged in
                     $equipeID = $_SESSION['equipeID'];
-                    $sql = "SELECT projectID FROM teams WHERE id = $equipeID";
+                    $sql = "SELECT projectID FROM teams WHERE id_team = $equipeID";
                     
                     $result = $conn->query($sql);
 
                     while ($row = $result->fetch_assoc()) {
                         $projectID = $row['projectID'];
 
-                        $projectsQuery = "SELECT * FROM projects WHERE id = $projectID";
+                        $projectsQuery = "SELECT * FROM projects WHERE id_project = $projectID";
                         $projectsResult = $conn->query($projectsQuery);
 
                         if ($projectsResult->num_rows > 0) {
@@ -465,7 +466,7 @@ session_start();
                             // Handle the case where the scrum master is not found
                         }
 
-                        $scrumMasterQuery = "SELECT * FROM users WHERE id = $projectsScrum";
+                        $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $projectsScrum";
                         $scrumMasterResult = $conn->query($scrumMasterQuery);
 
                         if ($scrumMasterResult->num_rows > 0) {
@@ -479,7 +480,7 @@ session_start();
                             $scrumMasterLastName = 'N/A';
                         }
 
-                        $prodMasterQuery = "SELECT * FROM users WHERE id = $projectsProd";
+                        $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
                         $prodMasterResult = $conn->query($prodMasterQuery);
 
                         if ($prodMasterResult->num_rows > 0) {
