@@ -103,3 +103,23 @@ questionDiv.forEach((element) => {
         questionsBtn.className = "flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item cursor-pointer";
     });
 });
+
+$(document).ready(function(){
+    showdata();
+  }); 
+ function showdata(page)
+ {
+   $.ajax({
+       url: 'pagination.php',
+       method: 'post',
+       data: {page_no:page},
+       success: function(result)
+       {
+         $("#result").html(result);
+       }
+     });
+ }
+ $(document).on("click",".pagination a", function(){
+ var page = $(this).attr('id');
+ showdata(page);
+ });
