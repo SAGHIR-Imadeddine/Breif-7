@@ -177,8 +177,6 @@ session_start();
                     <?php
                     include 'connection.php';
 
-                    // Check if the user is logged in
-                    // User is logged in
                     $image = $_SESSION['image'];
                     echo "<img src='$image'>";
                     ?>
