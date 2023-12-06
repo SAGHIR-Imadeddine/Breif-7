@@ -1,5 +1,14 @@
 <?php
 session_start();
+
+$idproject=0;
+$iduser=0;
+ if (isset($_GET["idproject"])&& isset($_GET["iduser"])) {
+    $idproject = $_GET["idproject"];
+    $iduser=$_GET["iduser"];
+}
+echo"$idproject";
+echo"$iduser";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -288,106 +297,69 @@ session_start();
             <main class="w-full grid grid-flow-row grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-6 hidden" id="ProjectsTable">
                 <h1 class="text-3xl text-black pb-6 col-span-3">Your projects</h1>
 
-                <?php
-
-
-                // Check if the user is logged in
-                // User is logged in
-                $equipeID = $_SESSION['equipeID'];
-                $sql = "SELECT projectID FROM teams WHERE id_team = $equipeID";
-
-                $result = $conn->query($sql);
-
-                while ($row = $result->fetch_assoc()) {
-                    $projectID = $row['projectID'];
-                    $currentMemberID = $_SESSION['id'];
-
-                    $projectsQuery = "SELECT * FROM projects WHERE id_project = $projectID";
-                    $projectsResult = $conn->query($projectsQuery);
-
-                    if ($projectsResult->num_rows > 0) {
-                        while ($projectsData = $projectsResult->fetch_assoc()) {
-                            $projectsImg = $projectsData['image'];
-                            $projectsName = $projectsData['name'];
-                            $projectsDesc = $projectsData['description'];
-                            $projectsScrum = $projectsData['scrumMasterID'];
-                            $projectsProd = $projectsData['productOwnerID'];
-                            $projectsDateStart = $projectsData['date_start'];
-                            $projectsDateEnd = $projectsData['date_end'];
-                            $projectsStatus = $projectsData['statut'];
-
-                            $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $projectsScrum";
-                            $scrumMasterResult = $conn->query($scrumMasterQuery);
-
-                            if ($scrumMasterResult->num_rows > 0) {
-                                $scrumMasterData = $scrumMasterResult->fetch_assoc();
-                                $scrumMasterFirstName = $scrumMasterData['firstName'];
-                                $scrumMasterLastName = $scrumMasterData['lastName'];
-                                $scrumMasterImg = $scrumMasterData['image'];
-                            } else {
-                                // Handle the case where the scrum master is not found
-                                $scrumMasterFirstName = 'N/A';
-                                $scrumMasterLastName = 'N/A';
-                            }
-
-                            $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
-                            $prodMasterResult = $conn->query($prodMasterQuery);
-
-                            if ($prodMasterResult->num_rows > 0) {
-                                $prodMasterData = $prodMasterResult->fetch_assoc();
-                                $prodMasterFirstName = $prodMasterData['firstName'];
-                                $prodMasterLastName = $prodMasterData['lastName'];
-                                $prodMasterImg = $prodMasterData['image'];
-                            } else {
-                                // Handle the case where the scrum master is not found
-                                $prodMasterFirstName = 'N/A';
-                                $prodMasterLastName = 'N/A';
-                            }
-
-                            echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">';
-                            echo '<a href="#">';
-                            echo "<img class='rounded-t-lg' src='$projectsImg' alt='' />";
-                            echo '</a>';
-                            echo '<div class="p-5">';
-                            echo '<div class="flex justify-between">';
-                            echo '<a href="#" class="flex flex-col">';
-                            echo "<h5 class='text-2xl font-bold tracking-tight text-gray-900'>$projectsName</h5>";
-                            echo "<p class='text-red-900'><i class='fa-solid fa-user-gear pr-2'></i>$prodMasterFirstName $prodMasterLastName</p>";
-                            echo "<p class='mb-4 text-green-900'><i class='fa-solid fa-user-pen pr-2'></i>$scrumMasterFirstName $scrumMasterLastName</p>";
-                            echo '</a>';
-                            echo '';
-                            echo "<img src='$prodMasterImg' alt='' class='w-[14%] h-[14%] rounded-full border-2 border-red-700 relative'>";
-                            echo '</div>';
-                            echo "<p class='mb-3 font-normal text-gray-700'>$projectsDesc</p>";
-                            echo '<div class="flex flex-row items-center justify-between">';
-                            echo '<div>';
-                            echo '<a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">';
-                            echo 'More details';
-                            echo '<svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">';
-                            echo '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>';
-                            echo '</a>';
-                            echo '</svg>';
-                            echo '</div>';
-                            echo '<div class="flex flex-col items-center">';
-                            echo "   <a href='ajouterquestion.php?idproject=$projectID &iduser=$currentMemberID '><button id='btnajoutquestion' class='p-2 w-fit h-fit text-center text-black text-xs font-medium bg-green-400 rounded-full'>+ QUESTION</button></a>";
-                            echo "<p class='text-gray-500'>$projectsDateStart</p>";
-                            echo "<p class='text-gray-500'>$projectsDateEnd</p>";
-                            if ($projectsStatus == 'Active') {
-                                echo '<p class="text-green-500">Active</p>';
-                            }
-                            echo '</div>';
-                            echo '</div>';
-                            echo '</div>';
-                        }
-                    } else {
-                        // Handle the case where no projects are found for the current user
-                    }
-
-                ?>
+               
                
             </main>
-         
-        <?php  } ?>
+            <section  class="formajouterquestion  fixed inset-0 bg-gray-500 bg-opacity-75 overflow-y-auto blur-10 w-full h-[100vh]">
+                <div class="flex items-center justify-center  min-h-screen">
+                    <?php
+                
+                
+                    if (isset($_POST["submit_question"])) {
+                       
+                        $title = $_POST['titre'];
+                        
+                        $description = $_POST['description'];
+
+                        // You may want to perform some validation on the input data
+
+                        // Insert the question into the database
+                        echo"$iduser";
+                        $insertQuestionQuery = "INSERT INTO question(datecreation,ID_User,tittre, description,id_project) VALUES (current_date(),'$iduser','$title','$description','$idproject')";
+    
+
+                        if ($conn->query($insertQuestionQuery) === TRUE) {
+                            // Question inserted successfully
+                            echo '<script>alert("Question added successfully!");</script>';
+                        } else {
+                            // Error inserting question
+                            echo '<script>alert("Error adding question: ' . $conn->error . '");</script>';
+                        }
+                    }
+                    ?>
+                    <form class="w-[70%]" action="" method="post">
+                        <div class="w-[80%] p-12 z-10 mx-[10%] bg-white">
+
+                            <div class="relative border border-gray-300 rounded-md px-3 py-2 shadow-sm  ">
+                                <input type="hidden" name="project_id" value="<?php echo $projectID; ?>">
+
+                                <label for="titre" class="absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium text-gray-900">titre</label>
+                                <input type="text" name="titre" id="titre" class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Titre">
+                            </div>
+
+
+
+                            <div class="mt-2 border border-gray-300 rounded-md px-3 relative">
+                                <label for="tags" class="block text-sm font-medium text-gray-700 absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium">Tags</label>
+                                <div id="tagsContainer" class="flex flex-wrap mb-2">
+                                    <!--tags will be added here-->
+                                </div>
+                                <input type="text" id="tags" name="tags" class="my-2 p-2 w-full border rounded-md" placeholder="Add tags">
+                            </div>
+
+                            <div class="mt-2">
+                                <textarea rows="8" name="description" id="description" class="block w-full border-2 border-gray-300 rounded-md py-1 resize-none placeholder-gray-500 focus:ring-0 pl-2 sm:text-sm" placeholder="Write a description..."></textarea>
+                            </div>
+
+                            <div>
+                            <input class="hover:bg-green-400 p-2 mt-2 text-center text-black text-xs font-medium bg-gray-200 rounded-full" name="submit_question" type="submit" value="Submit Question">
+                         </div>
+                        </div>
+
+                    </form>
+                </div>
+            </section>
+      
 
 
 
