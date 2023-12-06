@@ -241,8 +241,6 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                 <?php
                 include 'connection.php';
 
-                // Check if the user is logged in
-                // User is logged in
                 $equipeID = $_SESSION['equipeID'];
                 $sql = "SELECT * FROM teams WHERE id_team = $equipeID";
 
@@ -264,7 +262,6 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                         $scrumMasterLastName = $scrumMasterData['lastName'];
                         $scrumMasterImg = $scrumMasterData['image'];
                     } else {
-                        // Handle the case where the scrum master is not found
                         $scrumMasterFirstName = 'N/A';
                         $scrumMasterLastName = 'N/A';
                     }
@@ -317,20 +314,45 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
 
                         $description = $_POST['description'];
 
-                        // You may want to perform some validation on the input data
-
-                        // Insert the question into the database
+                        $tagsId = $_POST['tagIds'];
+                        $explodedTags = explode(",", $tagsId);
 
                         $insertQuestionQuery = "INSERT INTO question(datecreation,ID_User,tittre, description,id_project) VALUES (current_date(),'$iduser','$title','$description','$idproject')";
+                        $result = mysqli_query($conn, $insertQuestionQuery);
+                        $idquestion = mysqli_insert_id($conn);
+                        $sqlSelectAll = "SELECT id_tag FROM tag";
+                        $resultAll = $conn->query($sqlSelectAll);
 
-
-                        if ($conn->query($insertQuestionQuery) === TRUE) {
-                            // Question inserted successfully
-                            echo '<script>alert("Question added successfully!");</script>';
-                        } else {
-                            // Error inserting question
-                            echo '<script>alert("Error adding question: ' . $conn->error . '");</script>';
+                        if ($resultAll) {
+                            $allTagIds = [];
+                            while ($row = $resultAll->fetch_assoc()) {
+                                $allTagIds[] = $row['id_tag'];
+                            }
                         }
+                        $existedTagsIds = array_intersect($allTagIds, $explodedTags);
+                        foreach ($existedTagsIds as $tagId) {
+                            $tablepivot = "INSERT INTO tagquetion VALUES('$idquestion','$tagId')";
+                            $conn->query($tablepivot);
+                        }
+                        if (count($existedTagsIds) > 0) {
+                            echo '<script>
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Success",
+                                    text: "Question added successfully!",
+                                });
+                            </script>';
+                        } else {
+                            echo '<script>
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "Warning",
+                                    text: "Question did not insert.",
+                                });
+                            </script>';
+                        }
+                    } else {
+                        echo '<script>alert("Error fetching tags: ' . $conn->error . '");</script>';
                     }
                     ?>
                     <form class="w-[70%]" action="" method="post">
@@ -338,18 +360,16 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
 
                             <div class="relative border border-gray-300 rounded-md px-3 py-2 shadow-sm  ">
                                 <input type="hidden" name="project_id" value="<?php echo $projectID; ?>">
-
                                 <label for="titre" class="absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium text-gray-900">titre</label>
                                 <input type="text" name="titre" id="titre" class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Titre">
                             </div>
 
 
-
+                            <input type="text" name="tagIds" id="tagIds" class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Titre">
 
                             <div class="mt-2 border border-gray-300 rounded-md px-3 relative">
                                 <label for="tags" class="block text-sm font-medium text-gray-700 absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium">Tags</label>
                                 <div id="tagsContainer" class="flex flex-wrap mb-2">
-                                    <!-- Selected tags will be added here dynamically -->
                                 </div>
                                 <input type="text" id="tags" name="tags" class="mt-1 p-2 w-full border rounded-md" placeholder="Add tags">
                             </div>
@@ -383,38 +403,37 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
 
             const tagsContainer = document.getElementById("tagsContainer");
             const tagsInput = document.getElementById("tags");
-           
+            const tagIds = document.getElementById('tagIds');
 
             tagsInput.addEventListener("keydown", function(event) {
                 if (event.key === " " && tagsInput.value.trim() !== "") {
                     const tagName = tagsInput.value.trim();
-                    console.log("do oittfgh");
+                    const lastTag = tagName.split(' ');
+                    console.log(lastTag[lastTag.length - 1]);
 
 
-                    // Make an AJAX request to insert the tag into the database
                     fetch("insert_tag.php", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/x-www-form-urlencoded",
                             },
-                            body: `tagName=${encodeURIComponent(tagName)}`,
+                            body: `tagName=${encodeURIComponent(lastTag)}`,
                         })
-
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
                                 console.log("sdcfvghbjnk,")
-                                // Create a new tag element
                                 const tagElement = document.createElement("div");
                                 tagElement.className = "bg-blue-500 text-white p-1 rounded-md m-1";
-                                tagElement.textContent = tagName;
-
-                                // Create a button for tag removal
+                                tagElement.textContent = lastTag;
+                                tagIds.value += data.tagID + ",";
                                 const removeButton = document.createElement("button");
                                 removeButton.className = "ml-1 text-xs";
                                 removeButton.textContent = "Remove";
-                                removeButton.addEventListener("click", function() {
-                                    // Make an AJAX request to remove the tag from the database
+                                removeButton.addEventListener("click", function(event) {
+                                    event.preventDefault(); // Prevent the default behavior of the button click
+                                    console.log(`tagID=${data.tagID}`);
+                                    // Make an AJAX request to remove the &tag from the database
                                     fetch("remove_tag.php", {
                                             method: "POST",
                                             headers: {
@@ -425,8 +444,15 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                         .then(response => response.json())
                                         .then(data => {
                                             if (data.success) {
+
                                                 // Remove the tag element from the container
                                                 tagsContainer.removeChild(tagElement);
+                                                Swal.fire({
+                                                icon: "success",
+                                                title: "Tag Deleted Successfully",
+                                                showConfirmButton: false,// button
+                                                timer: 1500
+                                                });
                                             } else {
                                                 console.error("Error removing tag:", data.message);
                                             }
@@ -456,6 +482,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
         </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

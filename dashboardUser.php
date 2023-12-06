@@ -734,6 +734,75 @@ session_start();
         formajouterquestion.classList .remove("hidden");
     })
 
+    document.addEventListener("DOMContentLoaded", function () {
+    const tagsContainer = document.getElementById("tagsContainer");
+    const tagsInput = document.getElementById("tags");
+
+    tagsInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && tagsInput.value.trim() !== "") {
+            const tagName = tagsInput.value.trim();
+
+            // Make an AJAX request to insert the tag into the database
+            fetch("insert_tag.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `tagName=${encodeURIComponent(tagName)}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Create a new tag element
+                    const tagElement = document.createElement("div");
+                    tagElement.className = "bg-blue-500 text-white p-1 rounded-md m-1";
+                    tagElement.textContent = tagName;
+
+                    // Create a button for tag removal
+                    const removeButton = document.createElement("button");
+                    removeButton.className = "ml-1 text-xs";
+                    removeButton.textContent = "Remove";
+                    removeButton.addEventListener("click", function () {
+                        // Make an AJAX request to remove the tag from the database
+                        fetch("remove_tag.php", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                            body: `tagID=${data.tagID}`,
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Remove the tag element from the container
+                                tagsContainer.removeChild(tagElement);
+                            } else {
+                                console.error("Error removing tag:", data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error removing tag:", error);
+                        });
+                    });
+
+                    // Append the remove button to the tag element
+                    tagElement.appendChild(removeButton);
+
+                    // Append the tag element to the tags container
+                    tagsContainer.appendChild(tagElement);
+
+                    // Clear the input field
+                    tagsInput.value = "";
+                } else {
+                    console.error("Error inserting tag:", data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error inserting tag:", error);
+            });
+        }
+    });
+});
 
 
 
