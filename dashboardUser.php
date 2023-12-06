@@ -384,7 +384,7 @@ session_start();
 
                 ?>
             </main>
-            <section  class="formajouterquestion  hidden fixed inset-0 bg-gray-500 bg-opacity-75 overflow-y-auto blur-10 w-full h-[100vh]">
+            <section class="formajouterquestion  hidden fixed inset-0 bg-gray-500 bg-opacity-75 overflow-y-auto blur-10 w-full h-[100vh]">
                 <div class="flex items-center justify-center  min-h-screen">
                     <?php
                     if (isset($_POST["submit_question"])) {
@@ -505,7 +505,7 @@ session_start();
                                     </div>
                                     <div class="flex pb-2 justify-center">
                                     <form method = "POST" action = "remove.php">
-                                        <input type="hidden" name="userID" value="' . $MembersData['id'] . '">
+                                        <input type="hidden" name="userID" value="' . $MembersData['id_user'] . '">
                                     </form>
                                     </div>
                                 </div>
@@ -619,40 +619,61 @@ session_start();
                 <h1 class="text-3xl text-black">All questions</h1>
                 <a href="#" class="p-2 px-4 bg-blue-500 rounded text-white">My questions</a>
             </div>
-            <div class="flex flex-col gap-5 questionDiv">
-                <div class="bg-white p-6 rounded-md shadow-md mb-4">
-                    <div class="flex items-center mb-4">
-                        <span class="text-sm font-semibold text-blue-500 bg-blue-100 rounded-full px-3 py-1 mr-2">html</span>
-                        <span class="text-sm font-semibold text-green-500 bg-green-100 rounded-full px-3 py-1 mr-2">tailwind-css</span>
-                    </div>
-                    <h2 class="text-xl font-semibold mb-2">How to use Tailwind CSS with HTML?</h2>
-                    <p class="text-gray-600">I am new to Tailwind CSS and want to integrate it into my HTML project. Can anyone
-                        guide me through the process?</p>
-                    <div class="flex items-center mt-4">
-                        <div class="flex items-center">
-                            <img src="https://placekitten.com/40/40" alt="User Avatar" class="rounded-full w-8 h-8 mr-2">
-                            <span class="text-gray-700">John Doe</span>
-                        </div>
-                        <div class="text-gray-500 ml-4">
-                            <span>12 votes</span>
-                            <span class="mx-2">•</span>
-                            <span>3 answers</span>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex items-center space-x-4">
-                        <button class="flex items-center text-gray-500 hover:text-blue-500 focus:outline-none">
-                            <i class="far fa-thumbs-up mr-2"></i>
-                            <span>15</span>
-                        </button>
-                        <button class="flex items-center text-gray-500 hover:text-red-500 focus:outline-none">
-                            <i class="far fa-thumbs-down mr-2"></i>
-                            <span>3</span>
-                        </button>
-                    </div>
-                    <div class="flex justify-end">
-                        <span class="text-gray-600">Created on: Jan 1, 2023</span>
-                    </div>
-                </div>
+            <div class="flex flex-col gap-5">
+                <?php
+                include 'connection.php';
+
+                $query = "SELECT q.id_question, q.tittre AS title, q.description AS question_description, q.datecreation, u.image AS user_image, u.firstName AS user_firstName, u.lastName AS user_lastName
+                        FROM question q
+                        JOIN users u ON q.ID_User = u.id_user";
+                $result = mysqli_query($conn, $query);
+
+                if ($result) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $questionId = $row['id_question'];
+
+                        echo '<div class="bg-white p-6 rounded-md shadow-md mb-4">';
+                        echo '<h2 class="text-xl font-semibold mb-2">' . $row['title'] . '</h2>';
+                        echo '<p class="text-gray-600">' . $row['question_description'] . '</p>';
+
+                        echo '<div class="flex items-center mt-4">';
+                        echo '<div class="flex items-center">';
+                        echo '<img src="' . $row['user_image'] . '" alt="User Avatar" class="rounded-full w-8 h-8 mr-2">';
+                        echo '<span class="text-gray-700">' . $row['user_firstName'] . ' ' . $row['user_lastName'] . '</span>';
+                        echo '</div>';
+
+                        echo '<div class="text-gray-500 ml-4">';
+                        echo '<span>Created on: ' . date('M j, Y', strtotime($row['datecreation'])) . '</span>';
+                        echo '</div>';
+                        echo '</div>';
+
+                        echo '<div class="flex flex-row gap-5 justify-end items-center">';
+                        echo '<a href="article.php?id=' . $questionId . '" class="questionDiv p-2 px-4 bg-blue-500 rounded text-white questionDiv">Answers</a>';
+                        echo '</div>';
+
+                        echo '<div class="flex items-center mb-4">';
+                        $tagsQuery = "SELECT tag_name FROM tagquetion tq JOIN tag t ON tq.ID_Tag = t.id_tag WHERE tq.ID_Question = $questionId";
+                        $tagsResult = mysqli_query($conn, $tagsQuery);
+
+                        if ($tagsResult) {
+                            while ($tagRow = mysqli_fetch_assoc($tagsResult)) {
+                                echo '<span class="text-sm font-semibold text-blue-500 bg-blue-100 rounded-full px-3 py-1 mr-2">' . $tagRow['tag_name'] . '</span>';
+                            }
+
+                            mysqli_free_result($tagsResult);
+                        } else {
+                            echo 'Error executing the tags query: ' . mysqli_error($conn);
+                        }
+
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                    mysqli_free_result($result);
+                } else {
+                    echo 'Error executing the main query: ' . mysqli_error($conn);
+                }
+                ?>
+
             </div>
             <div>
 
@@ -660,7 +681,7 @@ session_start();
         </main>
 
         <main class="w-full flex flex-col p-6 hidden" id="SectionTable">
-            <div class="w-full bg-white rounded p-4 border-t border-gray-500">
+            <!-- <div class="w-full bg-white rounded p-4 border-t border-gray-500">
                 <div class="flex flex-row">
                     <div class="flex flex-col text-center w-1/6 pr-4 border-gray-500">
                         <img src="./img/zakaria.png" alt="" class="rounded">
@@ -737,7 +758,6 @@ session_start();
 
                                                     <textarea rows="2" name="description" id="description" class="block w-full border-none py-0 resize-none placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Write a description..."></textarea>
 
-                                                    <!-- Spacer element to match the height of the toolbar -->
                                                     <div aria-hidden="true">
                                                         <div class="py-2">
                                                             <div class="h-9"></div>
@@ -752,7 +772,7 @@ session_start();
                                                 </div>
 
                                                 <div class="absolute bottom-0 inset-x-px">
-                                                    <!-- Actions: These are just examples to demonstrate the concept, replace/wire these up however makes sense for your project. -->
+                                                   
 
                                                     <div class="border-t border-gray-200 px-2 py-2 flex justify-between items-center space-x-3 sm:px-3">
                                                         <img x-show="!(assigned.value === null)" src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80" :src="assigned.avatar" alt="" class="flex-shrink-0 h-10 w-10 rounded-full" x-description="Selected user avatar, show/hide based on listbox state.">
@@ -778,18 +798,10 @@ session_start();
 
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
-<script>
-    const btnajoutquestion=document.getElementById("btnajoutquestion");
-    const formajouterquestion=document.querySelector(".formajouterquestion");
-    btnajoutquestion.addEventListener("click",()=>{
-        formajouterquestion.classList .remove("hidden");
-    })
-
-</script>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
 </body>
 
 </html>
