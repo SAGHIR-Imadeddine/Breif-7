@@ -177,6 +177,7 @@ session_start();
                     <?php
                     include 'connection.php';
 
+
                     $image = $_SESSION['image'];
                     echo "<img src='$image'>";
                     ?>
@@ -368,7 +369,7 @@ session_start();
                             echo '</svg>';
                             echo '</div>';
                             echo '<div class="flex flex-col items-center">';
-                            echo "   <button id='btnajoutquestion' class='p-2 w-fit h-fit text-center text-black text-xs font-medium bg-green-400 rounded-full'>+ QUESTION</button>";
+                            echo "   <a href='ajouterquestion.php?'></a> <button id='btnajoutquestion' class='p-2 w-fit h-fit text-center text-black text-xs font-medium bg-green-400 rounded-full'>+ QUESTION</button>";
                             echo "<p class='text-gray-500'>$projectsDateStart</p>";
                             echo "<p class='text-gray-500'>$projectsDateEnd</p>";
                             if ($projectsStatus == 'Active') {
@@ -383,6 +384,7 @@ session_start();
                     }
 
                 ?>
+               
             </main>
             <section  class="formajouterquestion  hidden fixed inset-0 bg-gray-500 bg-opacity-75 overflow-y-auto blur-10 w-full h-[100vh]">
                 <div class="flex items-center justify-center  min-h-screen">
