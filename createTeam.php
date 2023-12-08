@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Get projectID based on scrumMasterID from the projects table
             $scrumMasterID = $_SESSION['id'];
-            $projectIDQuery = "SELECT id FROM projects WHERE scrumMasterID = ?";
+            $projectIDQuery = "SELECT id_project FROM projects WHERE scrumMasterID = ?";
             $stmtProjectID = $conn->prepare($projectIDQuery);
 
             $stmtProjectID->bind_param("i", $scrumMasterID);
