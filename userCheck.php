@@ -8,7 +8,7 @@ if (isset($_SESSION['email'])) {
     $result = $stmt->get_result();
     
     $row = $result->fetch_assoc();
-    $_SESSION['id'] = $row['id'];
+    $_SESSION['id'] = $row['id_user'];
     $_SESSION['image'] = $row['image'];
     $_SESSION['firstName'] = $row['firstName'];
     $_SESSION['lastName'] = $row['lastName'];
