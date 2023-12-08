@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Document</title>
+</head>
+<body class="bg-[#010101] ">
+                <!-- titre, description, project, & tags -->
+    <section class="bg-indigo-600 blur-10 w-full h-[100vh]">
+        <form action="" method="post">
+            <div class="w-[80%] p-12 z-10 mx-[10%] bg-white">
+
+                <div class="relative border border-gray-300 rounded-md px-3 py-2 shadow-sm  ">
+                    <label for="titre" class="absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium text-gray-900">titre</label>
+                    <input type="text" name="titre" id="titre" class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Titre">
+                </div>
+
+                <div class="mt-2 border border-gray-300 rounded-md px-3 relative">
+                    <label for="projet" class="block text-sm font-medium text-gray-700 absolute -top-2 left-2 -mt-px inline-block px-1  bg-white text-xs font-medium">projets</label>
+                    <select id="projet" name="projet" class="mt-1 inline-block w-full  py-2 text-base  focus:outline-none  sm:text-sm rounded-md">
+                        <option selected disabled>question liée au :</option>
+                        <option>projet1</option>
+                        <option>projet2</option>
+                        <option>projet3</option>
+                    </select>
+                </div>
+
+                <div class="mt-2 border border-gray-300 rounded-md px-3 relative">
+                    <label for="tags" class="block text-sm font-medium text-gray-700 absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium">Tags</label>
+                    <div id="tagsContainer" class="flex flex-wrap mb-2">
+                        <!--tags will be added here-->
+                    </div>
+                    <input type="text" id="tags" name="tags" class="my-2 p-2 w-full border rounded-md" placeholder="Add tags">
+                </div>
+
+                <div class="mt-2">
+                    <textarea rows="8" name="description" id="description" class="block w-full border-2 border-gray-300 rounded-md py-1 resize-none placeholder-gray-500 focus:ring-0 pl-2 sm:text-sm" placeholder="Write a description..."></textarea>
+                </div>
+               
+                <div>
+                <button id="submitButton" class="bg-blue-500 text-white p-2 my-2 rounded-md hover:bg-blue-600">Submit Question</button>
+                </div>
+            </div>
+            
+        </form>
+
+    </section>
+    
+</body>
+</html>
