@@ -1,3 +1,4 @@
+
 <?php
     include 'connection.php';
 
@@ -77,3 +78,4 @@
         echo 'Error executing the main query: ' . mysqli_error($conn);
     }
 ?>
+

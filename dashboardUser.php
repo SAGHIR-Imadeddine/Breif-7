@@ -309,6 +309,8 @@ session_start();
                 <?php
 
 
+
+
                 // Check if the user is logged in
                 // User is logged in
                 $equipeID = $_SESSION['equipeID'];
@@ -408,6 +410,9 @@ session_start();
         <?php  } ?>
 
 
+                                                <div class="min-w-0 flex-1">
+
+
 
         <main class="w-full grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-5 p-6 justify-center items-center hidden gap-5" id="MembersTable">
             <h1 class="text-3xl text-black pb-6 col-span-1 md:col-span-2 lg:col-span-5">Members</h1>
@@ -430,6 +435,7 @@ session_start();
                                     <p class = "text-white text-center">' . $teamName . '</p>
                                 </div>
                             </div>';
+
 
                 $MembersQuery = "SELECT * FROM users WHERE equipeID = $teamId";
                 $MembersResult = $conn->query($MembersQuery);
@@ -480,6 +486,7 @@ session_start();
 
             ?>
 
+
         </main>
 
         <main class="w-full grid grid-flow-row grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-6 hidden" id="ProjectsTable">
@@ -500,6 +507,7 @@ session_start();
 
                 $projectsQuery = "SELECT * FROM projects WHERE id_project = $projectID";
                 $projectsResult = $conn->query($projectsQuery);
+
 
                 if ($projectsResult->num_rows > 0) {
                     $projectsData = $projectsResult->fetch_assoc();
@@ -528,6 +536,7 @@ session_start();
                     $scrumMasterFirstName = 'N/A';
                     $scrumMasterLastName = 'N/A';
                 }
+
 
                 $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
                 $prodMasterResult = $conn->query($prodMasterQuery);
@@ -578,6 +587,8 @@ session_start();
             }
             ?>
         </main>
+
+
 
         <main class="w-full flex flex-col p-6 hidden" id="QuestionsTable">
             <div class="col-span-3 pb-6 flex flex-row justify-between">
@@ -692,6 +703,7 @@ session_start();
                 });
             });
         </script>
+
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
 </body>
