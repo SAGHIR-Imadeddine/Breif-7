@@ -170,12 +170,27 @@ session_start();
     <div class="w-full flex flex-col h-screen overflow-y-hidden">
         <!-- Desktop Header -->
         <header class="w-full items-center bg-blue-950 py-2 px-6 hidden sm:flex">
+            <form class="w-full">
+                <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                <div class="relative flex">
+                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="default-search" class="inline w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="search" required>
+
+                </div>
+
+
+            </form>
             <div class="w-1/2"></div>
             <div x-data="{ isOpen: false }" class="relative w-1/2 flex justify-end">
                 <button @click="isOpen = !isOpen" class="realtive z-10 w-12 h-12 rounded-full overflow-hidden border-4 border-gray-400 hover:border-gray-300 focus:border-gray-300 focus:outline-none">
                     <!-- <img src="./img/abdellah.png"> -->
                     <?php
                     include 'connection.php';
+
 
                     $image = $_SESSION['image'];
                     echo "<img src='$image'>";
@@ -191,8 +206,11 @@ session_start();
 
         <!-- Mobile Header & Nav -->
         <header x-data="{ isOpen: false }" class="w-full bg-sidebar py-5 px-6 sm:hidden">
-            <div class="flex items-center justify-between">
-                <a href="index.html" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">DATAWARE</a>
+            <div class="flex items-center justify-evenly gap-8">
+                <a href="index.html" class="text-white text-xl font-semibold uppercase hover:text-gray-300 max-w-[100px]">DATAWARE</a>
+
+
+
                 <button @click="isOpen = !isOpen" class="text-white text-3xl focus:outline-none">
                     <i x-show="!isOpen" class="fas fa-bars"></i>
                     <i x-show="isOpen" class="fas fa-times"></i>
@@ -368,7 +386,7 @@ session_start();
                             echo '</svg>';
                             echo '</div>';
                             echo '<div class="flex flex-col items-center">';
-                            echo "   <button id='btnajoutquestion' class='p-2 w-fit h-fit text-center text-black text-xs font-medium bg-green-400 rounded-full'>+ QUESTION</button>";
+                            echo "   <a href='ajouterquestion.php?idproject=$projectID &iduser=$currentMemberID '><button id='btnajoutquestion' class='p-2 w-fit h-fit text-center text-black text-xs font-medium bg-green-400 rounded-full'>+ QUESTION</button></a>";
                             echo "<p class='text-gray-500'>$projectsDateStart</p>";
                             echo "<p class='text-gray-500'>$projectsDateEnd</p>";
                             if ($projectsStatus == 'Active') {
@@ -383,63 +401,9 @@ session_start();
                     }
 
                 ?>
+
             </main>
-            <section  class="formajouterquestion  hidden fixed inset-0 bg-gray-500 bg-opacity-75 overflow-y-auto blur-10 w-full h-[100vh]">
-                <div class="flex items-center justify-center  min-h-screen">
-                    <?php
-                    if (isset($_POST["submit_question"])) {
-                        // Retrieve data from the form
-                        $projectID = $_POST['project_id'];
-                        $title = $_POST['titre'];
-                        $tags = $_POST['tags'];
-                        $description = $_POST['description'];
 
-                        // You may want to perform some validation on the input data
-
-                        // Insert the question into the database
-                        $insertQuestionQuery = "INSERT INTO questions (projectID, title, tags, description) VALUES ('$projectID', '$title', '$tags', '$description')";
-
-                        if ($conn->query($insertQuestionQuery) === TRUE) {
-                            // Question inserted successfully
-                            echo '<script>alert("Question added successfully!");</script>';
-                        } else {
-                            // Error inserting question
-                            echo '<script>alert("Error adding question: ' . $conn->error . '");</script>';
-                        }
-                    }
-                    ?>
-                    <form class="w-[70%]" action="" method="post">
-                        <div class="w-[80%] p-12 z-10 mx-[10%] bg-white">
-
-                            <div class="relative border border-gray-300 rounded-md px-3 py-2 shadow-sm  ">
-                                <input type="hidden" name="project_id" value="<?php echo $projectID; ?>">
-
-                                <label for="titre" class="absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium text-gray-900">titre</label>
-                                <input type="text" name="titre" id="titre" class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Titre">
-                            </div>
-
-
-
-                            <div class="mt-2 border border-gray-300 rounded-md px-3 relative">
-                                <label for="tags" class="block text-sm font-medium text-gray-700 absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium">Tags</label>
-                                <div id="tagsContainer" class="flex flex-wrap mb-2">
-                                    <!--tags will be added here-->
-                                </div>
-                                <input type="text" id="tags" name="tags" class="my-2 p-2 w-full border rounded-md" placeholder="Add tags">
-                            </div>
-
-                            <div class="mt-2">
-                                <textarea rows="8" name="description" id="description" class="block w-full border-2 border-gray-300 rounded-md py-1 resize-none placeholder-gray-500 focus:ring-0 pl-2 sm:text-sm" placeholder="Write a description..."></textarea>
-                            </div>
-
-                            <div>
-                                <button name="submit_question " id="submitButton" class="bg-blue-500 text-white p-2 my-2 rounded-md hover:bg-blue-600">Submit Question</button>
-                            </div>
-                        </div>
-
-                    </form>
-                </div>
-            </section>
         <?php  } ?>
 
 
@@ -619,6 +583,7 @@ session_start();
                 <h1 class="text-3xl text-black">All questions</h1>
                 <a href="#" class="p-2 px-4 bg-blue-500 rounded text-white">My questions</a>
             </div>
+            <div id="search_result"></div>
             <div class="flex flex-col gap-5 questionDiv">
                 <div class="bg-white p-6 rounded-md shadow-md mb-4">
                     <div class="flex items-center mb-4">
@@ -783,14 +748,107 @@ session_start();
                 </div>
             </div>
         </div>
-<script>
-    const btnajoutquestion=document.getElementById("btnajoutquestion");
-    const formajouterquestion=document.querySelector(".formajouterquestion");
-    btnajoutquestion.addEventListener("click",()=>{
-        formajouterquestion.classList .remove("hidden");
-    })
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $("#default-search").keyup(function() {
+                    var input = $(this).val();
+                    //alert(input);
+                    if (input != "") {
+                        $.ajax({
+                            url: "livesearch.php",
+                            method: "POST",
+                            data: {
+                                input:input
+                            },
+                            success:function(data) {
+                                $("#search_result").html(data);
+                            }
+                        });
 
-</script>
+                    } else {
+                        $("#search_result").css("display","none")
+
+                    }
+                })
+
+            })
+            const btnajoutquestion = document.getElementById("btnajoutquestion");
+            const formajouterquestion = document.querySelector(".formajouterquestion");
+            btnajoutquestion.addEventListener("click", () => {
+                formajouterquestion.classList.remove("hidden");
+            })
+
+            document.addEventListener("DOMContentLoaded", function() {
+                const tagsContainer = document.getElementById("tagsContainer");
+                const tagsInput = document.getElementById("tags");
+
+                tagsInput.addEventListener("keydown", function(event) {
+                    if (event.key === "Enter" && tagsInput.value.trim() !== "") {
+                        const tagName = tagsInput.value.trim();
+
+                        // Make an AJAX request to insert the tag into the database
+                        fetch("insert_tag.php", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/x-www-form-urlencoded",
+                                },
+                                body: `tagName=${encodeURIComponent(tagName)}`,
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Create a new tag element
+                                    const tagElement = document.createElement("div");
+                                    tagElement.className = "bg-blue-500 text-white p-1 rounded-md m-1";
+                                    tagElement.textContent = tagName;
+
+                                    // Create a button for tag removal
+                                    const removeButton = document.createElement("button");
+                                    removeButton.className = "ml-1 text-xs";
+                                    removeButton.textContent = "Remove";
+                                    removeButton.addEventListener("click", function() {
+                                        // Make an AJAX request to remove the tag from the database
+                                        fetch("remove_tag.php", {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/x-www-form-urlencoded",
+                                                },
+                                                body: `tagID=${data.tagID}`,
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    // Remove the tag element from the container
+                                                    tagsContainer.removeChild(tagElement);
+                                                } else {
+                                                    console.error("Error removing tag:", data.message);
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error("Error removing tag:", error);
+                                            });
+                                    });
+
+                                    // Append the remove button to the tag element
+                                    tagElement.appendChild(removeButton);
+
+                                    // Append the tag element to the tags container
+                                    tagsContainer.appendChild(tagElement);
+
+                                    // Clear the input field
+                                    tagsInput.value = "";
+                                } else {
+                                    console.error("Error inserting tag:", data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error inserting tag:", error);
+                            });
+                    }
+                });
+            });
+        </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
 </body>
