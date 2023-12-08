@@ -12,6 +12,7 @@ $idproject = 0;
 $iduser = 0;
 if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
     $idproject = $_GET["idproject"];
+    echo"$idproject";
     $iduser = $_GET["iduser"];
 }
 
@@ -322,7 +323,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                         $idquestion = mysqli_insert_id($conn);
                         $sqlSelectAll = "SELECT id_tag FROM tag";
                         $resultAll = $conn->query($sqlSelectAll);
-
+                        
                         if ($resultAll) {
                             $allTagIds = [];
                             while ($row = $resultAll->fetch_assoc()) {
@@ -378,20 +379,14 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                 <textarea rows="8" name="description" id="description" class="block w-full border-2 border-gray-300 rounded-md py-1 resize-none placeholder-gray-500 focus:ring-0 pl-2 sm:text-sm" placeholder="Write a description..."></textarea>
                             </div>
 
-                            <div>
+                            <a href="dashboardUser.php">
                                 <input class="hover:bg-green-400 p-2 mt-2 text-center text-black text-xs font-medium bg-gray-200 rounded-full" name="submit_question" type="submit" value="Submit Question">
-                            </div>
+                </a>
                         </div>
 
                     </form>
                 </div>
             </section>
-
-
-
-
-
-
 
 
         </div>

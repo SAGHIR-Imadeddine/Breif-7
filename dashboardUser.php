@@ -410,26 +410,26 @@ session_start();
         <?php  } ?>
 
 
-                                                <div class="min-w-0 flex-1">
+        <div class="min-w-0 flex-1">
 
 
 
-        <main class="w-full grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-5 p-6 justify-center items-center hidden gap-5" id="MembersTable">
-            <h1 class="text-3xl text-black pb-6 col-span-1 md:col-span-2 lg:col-span-5">Members</h1>
-            <?php
-            include 'connection.php';
-            $equipeID = $_SESSION['equipeID'];
-            $sql = "SELECT * FROM teams WHERE id_team = $equipeID";
+            <main class="w-full grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-5 p-6 justify-center items-center hidden gap-5" id="MembersTable">
+                <h1 class="text-3xl text-black pb-6 col-span-1 md:col-span-2 lg:col-span-5">Members</h1>
+                <?php
+                include 'connection.php';
+                $equipeID = $_SESSION['equipeID'];
+                $sql = "SELECT * FROM teams WHERE id_team = $equipeID";
 
-            $result = $conn->query($sql);
+                $result = $conn->query($sql);
 
-            while ($row = $result->fetch_assoc()) {
-                $teamImg = $row['image'];
-                $teamName = $row['teamName'];
-                $scrumMasterID = $row['scrumMasterID'];
-                $teamId = $row['id_team'];
+                while ($row = $result->fetch_assoc()) {
+                    $teamImg = $row['image'];
+                    $teamName = $row['teamName'];
+                    $scrumMasterID = $row['scrumMasterID'];
+                    $teamId = $row['id_team'];
 
-                echo '
+                    echo '
                             <div class="w-full h-48 col-span-1 md:col-span-2 lg:col-span-5 bg-white border border-gray-200 rounded-lg shadow sticky top-0" style = "background-image: url(' . $teamImg . '); background-position-x: center; background-position-y: 20%; background-repeat: no-repeat; background-size: cover;">
                                 <div class = "w-full h-fit bg-gray-800 py-2 rounded-t">
                                     <p class = "text-white text-center">' . $teamName . '</p>
@@ -437,33 +437,33 @@ session_start();
                             </div>';
 
 
-                $MembersQuery = "SELECT * FROM users WHERE equipeID = $teamId";
-                $MembersResult = $conn->query($MembersQuery);
+                    $MembersQuery = "SELECT * FROM users WHERE equipeID = $teamId";
+                    $MembersResult = $conn->query($MembersQuery);
 
-                while ($MembersData = $MembersResult->fetch_assoc()) {
-                    if ($MembersResult->num_rows > 0) {
-                        $MembersFirstName = $MembersData['firstName'];
-                        $MembersLastName = $MembersData['lastName'];
-                        $MembersImg = $MembersData['image'];
-                        if ($MembersData['role'] == 'user') {
-                            $MembersRole = "User";
-                            $MembersIcon = "fa-solid fa-user mr-2";
-                            $MembersColor = "gray";
-                        } else if ($MembersData['role'] == 'scrumMaster') {
-                            $MembersRole = "Scrum Master";
-                            $MembersIcon = "fa-solid fa-user-pen pr-2";
-                            $MembersColor = "green";
-                        } else if ($MembersData['role'] == 'prodOwner') {
-                            $MembersRole = "Product Owner";
-                            $MembersIcon = "fa-solid fa-user-gear pr-2";
-                            $MembersColor = "red";
+                    while ($MembersData = $MembersResult->fetch_assoc()) {
+                        if ($MembersResult->num_rows > 0) {
+                            $MembersFirstName = $MembersData['firstName'];
+                            $MembersLastName = $MembersData['lastName'];
+                            $MembersImg = $MembersData['image'];
+                            if ($MembersData['role'] == 'user') {
+                                $MembersRole = "User";
+                                $MembersIcon = "fa-solid fa-user mr-2";
+                                $MembersColor = "gray";
+                            } else if ($MembersData['role'] == 'scrumMaster') {
+                                $MembersRole = "Scrum Master";
+                                $MembersIcon = "fa-solid fa-user-pen pr-2";
+                                $MembersColor = "green";
+                            } else if ($MembersData['role'] == 'prodOwner') {
+                                $MembersRole = "Product Owner";
+                                $MembersIcon = "fa-solid fa-user-gear pr-2";
+                                $MembersColor = "red";
+                            }
+                        } else {
+                            // Handle the case where the scrum master is not found
+                            $MembersFirstName = 'N/A';
+                            $MembersLastName = 'N/A';
                         }
-                    } else {
-                        // Handle the case where the scrum master is not found
-                        $MembersFirstName = 'N/A';
-                        $MembersLastName = 'N/A';
-                    }
-                    echo '
+                        echo '
                                 <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow">
                                     <div class="flex flex-col items-center pb-2">
                                         <div class = "flex flex-row justify-between px-2 py-2 mb-2 bg-gray-800 rounded-t border border-gray-100">
@@ -481,152 +481,165 @@ session_start();
                                     </div>
                                 </div>
                                 ';
-                }
-            }
-
-            ?>
-
-
-        </main>
-
-        <main class="w-full grid grid-flow-row grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-6 hidden" id="ProjectsTable">
-            <h1 class="text-3xl text-black pb-6 col-span-3">Your projects</h1>
-
-            <?php
-            include 'connection.php';
-
-            // Check if the user is logged in
-            // User is logged in
-            $equipeID = $_SESSION['equipeID'];
-            $sql = "SELECT projectID FROM teams WHERE id_team = $equipeID";
-
-            $result = $conn->query($sql);
-
-            while ($row = $result->fetch_assoc()) {
-                $projectID = $row['projectID'];
-
-                $projectsQuery = "SELECT * FROM projects WHERE id_project = $projectID";
-                $projectsResult = $conn->query($projectsQuery);
-
-
-                if ($projectsResult->num_rows > 0) {
-                    $projectsData = $projectsResult->fetch_assoc();
-                    $projectsImg = $projectsData['image'];
-                    $projectsName = $projectsData['name'];
-                    $projectsDesc = $projectsData['description'];
-                    $projectsScrum = $projectsData['scrumMasterID'];
-                    $projectsProd = $projectsData['productOwnerID'];
-                    $projectsDateStart = $projectsData['date_start'];
-                    $projectsDateEnd = $projectsData['date_end'];
-                    $projectsStatus = $projectsData['statut'];
-                } else {
-                    // Handle the case where the scrum master is not found
+                    }
                 }
 
-                $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $projectsScrum";
-                $scrumMasterResult = $conn->query($scrumMasterQuery);
+                ?>
 
-                if ($scrumMasterResult->num_rows > 0) {
-                    $scrumMasterData = $scrumMasterResult->fetch_assoc();
-                    $scrumMasterFirstName = $scrumMasterData['firstName'];
-                    $scrumMasterLastName = $scrumMasterData['lastName'];
-                    $scrumMasterImg = $scrumMasterData['image'];
-                } else {
-                    // Handle the case where the scrum master is not found
-                    $scrumMasterFirstName = 'N/A';
-                    $scrumMasterLastName = 'N/A';
+
+            </main>
+
+            <main class="w-full grid grid-flow-row grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-6 hidden" id="ProjectsTable">
+                <h1 class="text-3xl text-black pb-6 col-span-3">Your projects</h1>
+
+                <?php
+                include 'connection.php';
+
+                // Check if the user is logged in
+                // User is logged in
+                $equipeID = $_SESSION['equipeID'];
+                $sql = "SELECT projectID FROM teams WHERE id_team = $equipeID";
+
+                $result = $conn->query($sql);
+
+                while ($row = $result->fetch_assoc()) {
+                    $projectID = $row['projectID'];
+
+                    $projectsQuery = "SELECT * FROM projects WHERE id_project = $projectID";
+                    $projectsResult = $conn->query($projectsQuery);
+
+
+                    if ($projectsResult->num_rows > 0) {
+                        $projectsData = $projectsResult->fetch_assoc();
+                        $projectsImg = $projectsData['image'];
+                        $projectsName = $projectsData['name'];
+                        $projectsDesc = $projectsData['description'];
+                        $projectsScrum = $projectsData['scrumMasterID'];
+                        $projectsProd = $projectsData['productOwnerID'];
+                        $projectsDateStart = $projectsData['date_start'];
+                        $projectsDateEnd = $projectsData['date_end'];
+                        $projectsStatus = $projectsData['statut'];
+                    } else {
+                        // Handle the case where the scrum master is not found
+                    }
+
+                    $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $projectsScrum";
+                    $scrumMasterResult = $conn->query($scrumMasterQuery);
+
+                    if ($scrumMasterResult->num_rows > 0) {
+                        $scrumMasterData = $scrumMasterResult->fetch_assoc();
+                        $scrumMasterFirstName = $scrumMasterData['firstName'];
+                        $scrumMasterLastName = $scrumMasterData['lastName'];
+                        $scrumMasterImg = $scrumMasterData['image'];
+                    } else {
+                        // Handle the case where the scrum master is not found
+                        $scrumMasterFirstName = 'N/A';
+                        $scrumMasterLastName = 'N/A';
+                    }
+
+
+                    $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
+                    $prodMasterResult = $conn->query($prodMasterQuery);
+
+                    if ($prodMasterResult->num_rows > 0) {
+                        $prodMasterData = $prodMasterResult->fetch_assoc();
+                        $prodMasterFirstName = $prodMasterData['firstName'];
+                        $prodMasterLastName = $prodMasterData['lastName'];
+                        $prodMasterImg = $prodMasterData['image'];
+                    } else {
+                        // Handle the case where the scrum master is not found
+                        $prodMasterFirstName = 'N/A';
+                        $prodMasterLastName = 'N/A';
+                    }
+                    echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">';
+                    echo '<a href="#">';
+                    echo "<img class='rounded-t-lg' src='$projectsImg' alt='' />";
+                    echo '</a>';
+                    echo '<div class="p-5">';
+                    echo '<div class = "flex justify-between">';
+                    echo '<a href="#" class = "flex flex-col">';
+                    echo "<h5 class='text-2xl font-bold tracking-tight text-gray-900'>$projectsName</h5>";
+                    echo "<p class = 'text-red-900'><i class='fa-solid fa-user-gear pr-2'></i>$prodMasterFirstName $prodMasterLastName</p>";
+                    echo "<p class = 'mb-4 text-green-900'><i class='fa-solid fa-user-pen pr-2'></i>$scrumMasterFirstName $scrumMasterLastName</p>";
+                    echo '</a>';
+                    echo '';
+                    echo "<img src='$prodMasterImg' alt='' class = 'w-[14%] h-[14%] rounded-full border-2 border-red-700 relative'>";
+                    echo '</div>';
+                    echo "<p class='mb-3 font-normal text-gray-700'>$projectsDesc</p>";
+                    echo '<div class = "flex flex-row items-center justify-between">';
+                    echo '<div>';
+                    echo '<a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">';
+                    echo 'More details';
+                    echo '<svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">';
+                    echo '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>';
+                    echo '</a>';
+                    echo '</svg>';
+                    echo '</div>';
+                    echo '<div class = "flex flex-col items-center">';
+                    echo "<p class = 'text-gray-500'>$projectsDateStart</p>";
+                    echo "<p class = 'text-gray-500'>$projectsDateEnd</p>";
+                    if ($projectsStatus == 'Active') {
+                        echo '<p class = "text-green-500">Active</p>';
+                    }
+                    echo '</div>';
+                    echo '</div>';
+                    echo '</div>';
                 }
-
-
-                $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
-                $prodMasterResult = $conn->query($prodMasterQuery);
-
-                if ($prodMasterResult->num_rows > 0) {
-                    $prodMasterData = $prodMasterResult->fetch_assoc();
-                    $prodMasterFirstName = $prodMasterData['firstName'];
-                    $prodMasterLastName = $prodMasterData['lastName'];
-                    $prodMasterImg = $prodMasterData['image'];
-                } else {
-                    // Handle the case where the scrum master is not found
-                    $prodMasterFirstName = 'N/A';
-                    $prodMasterLastName = 'N/A';
-                }
-                echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">';
-                echo '<a href="#">';
-                echo "<img class='rounded-t-lg' src='$projectsImg' alt='' />";
-                echo '</a>';
-                echo '<div class="p-5">';
-                echo '<div class = "flex justify-between">';
-                echo '<a href="#" class = "flex flex-col">';
-                echo "<h5 class='text-2xl font-bold tracking-tight text-gray-900'>$projectsName</h5>";
-                echo "<p class = 'text-red-900'><i class='fa-solid fa-user-gear pr-2'></i>$prodMasterFirstName $prodMasterLastName</p>";
-                echo "<p class = 'mb-4 text-green-900'><i class='fa-solid fa-user-pen pr-2'></i>$scrumMasterFirstName $scrumMasterLastName</p>";
-                echo '</a>';
-                echo '';
-                echo "<img src='$prodMasterImg' alt='' class = 'w-[14%] h-[14%] rounded-full border-2 border-red-700 relative'>";
-                echo '</div>';
-                echo "<p class='mb-3 font-normal text-gray-700'>$projectsDesc</p>";
-                echo '<div class = "flex flex-row items-center justify-between">';
-                echo '<div>';
-                echo '<a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">';
-                echo 'More details';
-                echo '<svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">';
-                echo '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>';
-                echo '</a>';
-                echo '</svg>';
-                echo '</div>';
-                echo '<div class = "flex flex-col items-center">';
-                echo "<p class = 'text-gray-500'>$projectsDateStart</p>";
-                echo "<p class = 'text-gray-500'>$projectsDateEnd</p>";
-                if ($projectsStatus == 'Active') {
-                    echo '<p class = "text-green-500">Active</p>';
-                }
-                echo '</div>';
-                echo '</div>';
-                echo '</div>';
-            }
-            ?>
-        </main>
+                ?>
+            </main>
 
 
 
-        <main class="w-full flex flex-col p-6 hidden" id="QuestionsTable">
-            <div class="col-span-3 pb-6 flex flex-row justify-between">
-                <h1 class="text-3xl text-black">All questions</h1>
-                <a href="#" class="p-2 px-4 bg-blue-500 rounded text-white">My questions</a>
-            </div>
+            <main class="w-full flex flex-col p-6 hidden" id="QuestionsTable">
+                <div class="col-span-3 pb-6 flex flex-row justify-between allquestions " >
+                    <h1 class="text-3xl text-black">All questions</h1>
+                    <a href="#" class="p-2 px-4 bg-blue-500 rounded text-white">My questions</a>
+                </div>
 
-            <div class="flex flex-col gap-5" id = "result">  
+                <div class="flex flex-col gap-5 allquestions" id="result">
 
-            </div>
+                </div>
+                      <div id="search_result">
+                            </div>
+                    
 
-        </main>      
+
+            </main>
         </div>
+
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script>
+        
             $(document).ready(function() {
                 $("#default-search").keyup(function() {
                     var input = $(this).val();
-                    //alert(input);
+
                     if (input != "") {
+                        // alert(input);
                         $.ajax({
                             url: "livesearch.php",
                             method: "POST",
                             data: {
-                                input:input
+                                input: input
                             },
-                            success:function(data) {
+                            success: function(data) {
                                 $("#search_result").html(data);
                             }
                         });
 
                     } else {
-                        $("#search_result").css("display","none")
+                        $("#search_result").css("display", "none")
 
                     }
+                      $(".allquestions").hide();
                 })
+              
+                
 
             })
+            
+
             const btnajoutquestion = document.getElementById("btnajoutquestion");
             const formajouterquestion = document.querySelector(".formajouterquestion");
             btnajoutquestion.addEventListener("click", () => {

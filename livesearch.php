@@ -1,5 +1,6 @@
 <?php 
 include('connection.php');
+
 if(isset($_POST['input'])){
     $input=$_POST['input'];
     echo"$input";
@@ -33,7 +34,7 @@ if(isset($_POST['input'])){
                 echo '</div>';
 
                 echo '<div class="flex flex-row gap-5 justify-end items-center">';
-                echo '<a href="article.php?id=' . $questionId . '" class="questionDiv p-2 px-4 bg-blue-500 rounded text-white questionDiv">Answers</a>';
+                echo '<a href="Answers.php?question_id=' . $questionId . '" class="questionDiv p-2 px-4 bg-blue-500 rounded text-white questionDiv">Answers</a>';
                 echo '</div>';
 
                 echo '<div class="flex items-center mb-4">';
