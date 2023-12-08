@@ -505,7 +505,7 @@ session_start();
                                     </div>
                                     <div class="flex pb-2 justify-center">
                                     <form method = "POST" action = "remove.php">
-                                        <input type="hidden" name="userID" value="' . $MembersData['id'] . '">
+                                        <input type="hidden" name="userID" value="' . $MembersData['id_user'] . '">
                                     </form>
                                     </div>
                                 </div>
@@ -718,10 +718,13 @@ session_start();
                                                     </div>
 
                                                 </div>
-                                            </div>
+                                                <div class="mt-4 w-11/12 ml-6 flex justify-around">
+                                                    <div class="w-[20%] bg-red-700 text-white text-center p-2 rounded-md"><a href="">Modifier</a></div>
+                                                    <div class="w-[20%] bg-orange-600 text-white text-center p-2 rounded-md"><a href="./delRep.php?id_reponse={$rep['id_reponse']}">Supprimer</a></div>
+                                                </div>
 
-                                </div>
-                                </li>
+                                            </div>
+                                        </li>
 
                                 <li class="list-none">
 
