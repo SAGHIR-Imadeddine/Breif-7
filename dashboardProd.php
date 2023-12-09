@@ -189,10 +189,10 @@ if (isset($_SESSION['email'])) {
                 <i class="fa-solid fa-list-check mr-3"></i>
                 Projects
             </a>
-            <button class="flex items-center active-nav-link text-white py-4 pl-6 nav-item cursor-pointer" id="statisticbutton">
+            <a class="flex items-center active-nav-link text-white py-4 pl-6 nav-item cursor-pointer" id="statisticbutton">
                 <i class="fa-solid fa-chart-simple mr-3"></i>
                 STATISTICS
-            </button>
+            </a>
         </nav>
         <a href="logout.php" class="absolute w-full upgrade-btn bottom-0 active-nav-link text-white flex items-center justify-center py-4">
             <i class="fas fa-arrow-circle-up mr-3"></i>
@@ -505,36 +505,20 @@ if (isset($_SESSION['email'])) {
 
             <main>
                 <div class="bg-gray-100">
-                    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                    <div class="w-full mx-auto py-12 px-4 sm:px-6 lg:px-8">
 
-                        <div>
 
-                            <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
 
-                                <div class="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6" id="nbrquestion">
 
-                                </div>
 
-                                <div class="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-                                    <dt class="text-sm font-medium text-gray-500 truncate">
-                                        Avg. Open Rate
-                                    </dt>
-                                    <dd class="mt-1 text-3xl font-semibold text-gray-900">
-                                        58.16%
-                                    </dd>
-                                </div>
+                        <div class=" flex justify-evenly  items-center  flex-wrap" id="nbrquestion">
 
-                                <div class="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-                                    <dt class="text-sm font-medium text-gray-500 truncate">
-                                        Avg. Click Rate
-                                    </dt>
-                                    <dd class="mt-1 text-3xl font-semibold text-gray-900">
-                                        24.57%
-                                    </dd>
-                                </div>
-
-                            </dl>
                         </div>
+
+
+
+
+
 
                     </div>
                 </div>
@@ -737,11 +721,17 @@ if (isset($_SESSION['email'])) {
         $(document).ready(function() {
             $("#statisticbutton").click(function() {
 
-             
+
                 $.get("questionparproject.php", function(data) {
                     $("#nbrquestion").html(data);
                 });
+                $("#ProjectsTable").hide();
+                $("#TeamsTable").hide();
+                $("#MembersTable").hide();
+
+
             });
+
         });
     </script>
 
