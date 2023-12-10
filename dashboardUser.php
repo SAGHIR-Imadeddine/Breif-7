@@ -591,7 +591,7 @@ session_start();
 
 
             <main class="w-full flex flex-col p-6 hidden" id="QuestionsTable">
-                <div class="col-span-3 pb-6 flex flex-row justify-between allquestions " >
+                <div class="col-span-3 pb-6 flex flex-row justify-between allquestions ">
                     <h1 class="text-3xl text-black">All questions</h1>
                     <a href="#" class="p-2 px-4 bg-blue-500 rounded text-white">My questions</a>
                 </div>
@@ -599,9 +599,9 @@ session_start();
                 <div class="flex flex-col gap-5 allquestions" id="result">
 
                 </div>
-                      <div id="search_result">
-                            </div>
-                    
+                <div id="search_result">
+                </div>
+
 
 
             </main>
@@ -610,7 +610,6 @@ session_start();
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script>
-        
             $(document).ready(function() {
                 $("#default-search").keyup(function() {
                     var input = $(this).val();
@@ -627,18 +626,21 @@ session_start();
                                 $("#search_result").html(data);
                             }
                         });
+                         $(".allquestions").hide();
+                    $("#search_result").show()
 
                     } else {
-                        $("#search_result").css("display", "none")
+                        $("#search_result").hide();
+                        $(".allquestions").show();
 
                     }
-                      $(".allquestions").hide();
+                   
                 })
-              
-                
+
+
 
             })
-            
+         
 
             const btnajoutquestion = document.getElementById("btnajoutquestion");
             const formajouterquestion = document.querySelector(".formajouterquestion");
