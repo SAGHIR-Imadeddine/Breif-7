@@ -285,7 +285,9 @@ session_start();
                                         <?php
                                         do {
                                             if ($questionData['id_reponse']) {
+
                                         ?>
+                                              
                                                 <li class="list-none">
                                                     <div class="relative pb-8">
                                                         <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>

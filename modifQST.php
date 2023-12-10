@@ -1,31 +1,30 @@
 <?php
-// modifQST.php
+include('connection.php');
+session_start();
 
-// Include the database connection file
-include 'connection.php';
-
-// Retrieve the question ID from the query parameter
-$qst_id = isset($_GET['qst_id']) ? $_GET['qst_id'] : 0;
-
-// Fetch the question details from the database based on the $qst_id
-$selectQuestionQuery = "SELECT * FROM question WHERE id_question = $qst_id";
-$result = mysqli_query($conn, $selectQuestionQuery);
-
-if (!$result) {
-    // Handle the case where the select query fails
-    echo "Error fetching question details: " . mysqli_error($conn);
-    exit;
+// Check if the user is logged in
+if (!isset($_SESSION['id'])) {
+    header("Location: login.php"); // Redirect to the login page if not logged in
+    exit();
 }
 
-$questionData = mysqli_fetch_assoc($result);
+// Check if the question ID is provided in the URL
+if (!isset($_GET['qst_id'])) {
+    echo "Question ID not provided.";
+    exit();
+}
 
-// Fetch the existing tags associated with the question
-$tagsQuery = "SELECT ID_tag FROM tagquetion WHERE ID_question = $qst_id";
-$tagsResult = mysqli_query($conn, $tagsQuery);
+$questionId = $_GET['qst_id'];
 
-$existingTags = [];
-while ($tagRow = mysqli_fetch_assoc($tagsResult)) {
-    $existingTags[] = $tagRow['ID_tag'];
+// Fetch the existing question details from the database
+$query = "SELECT * FROM question WHERE id_question = $questionId";
+$result = $conn->query($query);
+
+if ($result->num_rows > 0) {
+    $questionData = $result->fetch_assoc();
+} else {
+    echo "Question not found.";
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -239,70 +238,25 @@ while ($tagRow = mysqli_fetch_assoc($tagsResult)) {
     <div class="w-[80%] p-12 z-10 mx-[10%] bg-white">
 
         <!-- Hidden input for question ID -->
+        <input type="hidden" name="questionId" value="<?= $questionData['id_question'] ?>">
 
         <!-- Modified title input -->
         <div class="relative border border-gray-300 rounded-md px-3 py-2 shadow-sm">
             <label for="updated_title" class="absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium text-gray-900">Title</label>
-            <input type="text" name="updated_title" id="updated_title" class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Title" value="<?= htmlspecialchars($questionData['tittre']) ?>" required>
+            <input type="text"  id="updated_title" class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Title" name="title" value="<?= $questionData['tittre'] ?>" required>
         </div>
 
         <!-- Hidden input for tag IDs -->
-   
-
-        <!-- Tags input -->
-        <div class="mt-2 border border-gray-300 rounded-md px-3 relative">
-            <label for="tags" class="block text-sm font-medium text-gray-700 absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium">Tags</label>
-            <div id="tagsContainer" class="flex flex-wrap mb-2">
-                <?php
-                // Display existing tags as pre-filled tags
-                
-            // Fetch all available tags
-            
-                   $allTagsQuery = "SELECT tag.tag_name,tag.id_tag FROM tag INNER JOIN tagquetion ON tagquetion.ID_Tag = tag.id_tag where ID_Question = $qst_id ";
-                    $allTagsResult = mysqli_query($conn, $allTagsQuery);
-
-                    while ($tagRow = mysqli_fetch_assoc($allTagsResult)) {
-                        $tagId = $tagRow['id_tag'];
-                        $tagName = $tagRow['tag_name'];
-                    
-                        // Check if the tag is associated with the question
-                        $selected = in_array($tagId, $existingTags) ? 'selected' : '';
-                    
-                        // Display the tag with a remove button
-                        echo '<div id="tag_' . $tagId . '" class="bg-blue-500 text-white p-1 rounded-md m-1">' . $tagName .  '<button class="ml-1 text-xs" onclick="removeTag(' . $tagId . ');">REMOVE</button></div>';
-                    }
-                
-                ?>
-            </div>
-            <input type="text" id="tags" name="tags" class="mt-1 p-2 w-full border rounded-md" placeholder="Add tags">
-        </div>
 
         <!-- Modified description input -->
         <div class="mt-2">
-            <textarea rows="8" name="updated_description" id="updated_description" class="block w-full border-2 border-gray-300 rounded-md py-1 resize-none placeholder-gray-500 focus:ring-0 pl-2 sm:text-sm" placeholder="Write a description..."required><?= htmlspecialchars($questionData['description']) ?></textarea>
+            <textarea rows="8" name="description" id="updated_description" class="block w-full border-2 border-gray-300 rounded-md py-1 resize-none placeholder-gray-500 focus:ring-0 pl-2 sm:text-sm" placeholder="Write a description..."required> <?= $questionData['description'] ?></textarea>
         </div>
 
         <!-- Updated submit button -->
-        <button type="submit" class="hover:bg-green-400 p-2 mt-2 text-center text-black text-xs font-medium bg-gray-200 rounded-full" name="submit_question">Update Question</button>
+        <button type="submit" class="hover:bg-green-400 p-2 mt-2 text-center text-black text-xs font-medium bg-gray-200 rounded-full">Update Question</button>
 
     </div>
 </form>
-<script>
-      function removeTag(tagId) {
-        // Remove the tag from the tagsContainer
-        var tagElement = document.getElementById('tag_' + tagId);
-        tagElement.parentNode.removeChild(tagElement);
-
-        // Remove the tag from the hidden input
-        var tagsInput = document.getElementById('tags');
-        var currentTags = tagsInput.value.split(',');
-        var tagIndex = currentTags.indexOf(tagId.toString());
-        if (tagIndex !== -1) {
-            currentTags.splice(tagIndex, 1);
-            tagsInput.value = currentTags.join(',');
-        }
-    }
-        
-</script>
 </body>
 </html>
