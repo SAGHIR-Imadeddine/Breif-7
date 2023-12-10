@@ -1,13 +1,13 @@
 
 <?php
 include 'connection.php';
-function dd($data)
-{
-    echo '<pre>';
-    print_r($data);
-    echo '</pre>';
-    exit; 
-}
+// function dd($data)
+// {
+//     echo '<pre>';
+//     print_r($data);
+//     echo '</pre>';
+//     exit; 
+// }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["tagName"])) {
     $tagName = $_POST["tagName"];

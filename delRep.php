@@ -1,25 +1,31 @@
 <?php
 require_once('./connection.php');
 
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id_reponse'])) {
+if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['ans'])) {
     
-    $repId = $_GET['id_reponse'];
-
+    $repId = $_GET['ans'];
+    $qst = $_GET['qst'];
     try {
         
-        $stmt = $conn->prepare("DELETE FROM reponse WHERE id_reponse = :id");
-
+        $conn->begin_transaction();
         
-        $stmt->bindParam(':id', $repId);
+        $del_reaction = $conn->prepare("DELETE FROM reaction WHERE id_reponse = ?");
+        $del_reaction->bind_param('i' , $repId);
+        $del_reaction->execute();
+        
+        $stmt = $conn->prepare("DELETE FROM reponse WHERE id_reponse = ?");
+        $stmt->bind_param('i', $repId);
         $stmt->execute();
-        header("Location: dashboardUser.php");
+        
+        $conn->commit();
+        header("Location: Answers.php?question_id={$qst}");
         exit();
     }
-    catch(PDOException $e) {
+    catch(mysqli_sql_exception $e) {
+        $conn->rollback();
         echo "Error: " . $e->getMessage();
     }
 }
 
-
-$conn = null;
+$conn->close();
 ?>

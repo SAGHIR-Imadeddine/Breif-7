@@ -1,8 +1,24 @@
 <?php
 session_start();
+include('connection.php');
 $myID = $_SESSION["id"];
- include('connection.php');
- $questionId = isset($_GET['question_id']) ? $_GET['question_id'] : null;
+ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_reponse'])) {
+    $repId = $_POST['reponseId'];
+    $description = $_POST['description'];
+    $updatereponse="UPDATE reponse SET reponse ='$description' where id_reponse= '$repId'";
+    $updateResultat=$conn->query($updatereponse);
+
+
+    if($updateResultat){
+        header("Location: dashboardUser.php");
+    }
+}
+if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['ans'])) {
+    $repId = $_GET['ans'];
+}
+
+
+ $questionId = isset($_GET['qst']) ? $_GET['qst'] : null;
         
         $sql = "SELECT q.id_question AS id_question , q.tittre, q.description AS q_description, q.datecreation AS q_datecreation,
                        uq.image AS questioner_image, uq.firstName AS questioner_firstName, uq.lastName AS questioner_lastName,
@@ -17,8 +33,17 @@ $myID = $_SESSION["id"];
         $result = $conn->query($sql);
         if ($result) {
             $questionData = $result->fetch_assoc();
+
         }
         $quetionID = $questionData['id_question'];
+        $query = "SELECT * FROM reponse where id_reponse =  $repId";
+
+            $res = $conn->query($query);
+            if ($res) {
+            $ansData = $res->fetch_assoc();
+            }
+
+        
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -252,92 +277,14 @@ $myID = $_SESSION["id"];
                                 <div class="flow-root">
 
 
-                                    <!-- HTML code for displaying answers -->
-                                    <ul role="list" class="list-none -mb-8">
-
-                                        <?php
-                                        do {
-                                            if ($questionData['id_reponse']){
-                                        ?>
-                                                <li class="list-none">
-                                                    <div class="relative pb-8">
-                                                        <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
-                                                        <div class="relative flex flex-col items-start space-x-3">
-                                                            <div class="flex gap-4">
-                                                                <img class="h-10 w-10 rounded-full bg-gray-400  ring-8 ring-white" src="<?= $questionData['answerer_image'] ?>" alt="">
-                                                                <div>
-                                                                    <div class="text-sm">
-                                                                        <a href="#" class="font-medium text-gray-900"><?= $questionData['answerer_firstName'] ?> <?= $questionData['answerer_lastName'] ?></a>
-                                                                    </div>
-                                                                    <p class="mt-0.5 text-sm text-gray-500">
-                                                                        Commented On : <?= $questionData['a_datecreation']?>
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- Answer details -->
-                                                        <div class="min-w-0 flex-1 border-b">
-                                                                <div class="mt-2 ml-8 text-sm text-gray-700">
-                                                                    <p class=" border-gray-200"><?= $questionData['reponse'] ?></p>
-                                                                </div>
-                                                                <div class="flex w-full mt-2 ml-8 space-x-4">
-                                                                    <form action="handle_reaction.php" method="post"> 
-                                                                        <input type="hidden" name="action" value="like">
-                                                                        <input type="hidden" name="answerId" value="<?= $questionData['id_reponse'] ?>">
-                                                                        <label for="correctAnswer<?= $questionData['id_reponse'] ?>"></label>
-                                                                        <button type="submit" class="text-blue-500 hover:text-blue-700 focus:outline-none">
-                                                                            <i class="fa-solid fa-thumbs-up"></i> 
-                                                                        </button>
-                                                                        <?php
-                                                                        // Display the number of likes for this answer
-                                                                        $likesQuery = "SELECT COUNT(*) AS likeCount FROM `reaction` WHERE `id_reponse` = {$questionData['id_reponse']} AND `reaction` = 1";
-                                                                        $likesResult = $conn->query($likesQuery);
-                                                                        $likeCount = ($likesResult && $likesResult->num_rows > 0) ? $likesResult->fetch_assoc()['likeCount'] : 0;
-                                                                        ?>
-                                                                        <span class="text-blue-500"><?= $likeCount ?> Likes</span>
-                                                                    </form>
-
-                                                                    <form action="handle_reaction.php" method="post">
-                                                                        <input type="hidden" name="action" value="dislike">
-                                                                        <input type="hidden" name="answerId" value="<?= $questionData['id_reponse'] ?>">
-                                                                        <button type="submit" class="text-red-500 hover:text-red-700 focus:outline-none">
-                                                                            <i class="fa-solid fa-thumbs-down"></i> 
-                                                                        </button>
-                                                                        <?php
-                                                                        $dislikesQuery = "SELECT COUNT(*) AS dislikeCount FROM `reaction` WHERE `id_reponse` = {$questionData['id_reponse']} AND `reaction` = 0";
-                                                                        $dislikesResult = $conn->query($dislikesQuery);
-                                                                        $dislikeCount = ($dislikesResult && $dislikesResult->num_rows > 0) ? $dislikesResult->fetch_assoc()['dislikeCount'] : 0;
-                                                                        ?>
-                                                                        <span class="text-red-500"><?= $dislikeCount ?> Dislikes</span>                                                              
-                                                                    </form>
-                                                                    <input type="checkbox" id="correctAnswer<?= $questionData['id_reponse'] ?>" name="correctAnswer" value="1">
-                                                                    <label for="">Mark as Correct</label>
-                                                                    <?php
-                                                                        if ($myID == $questionData['uIdRep']){
-                                                                        echo "<div class='justify-self-end'>
-                                                                                <a href='modifRep.php?ans={$questionData['id_reponse']}&qst={$questionData['id_question']}' class='text-sm hover:text-orange-500 hover:bg-white hover:border-2 hover:border-orange-500 text-white text-center w-[80px] bg-orange-500 p-1 rounded-lg'>modifier</a>
-                                                                                <a href='delRep.php?ans={$questionData['id_reponse']}&qst={$questionData['id_question']}' class='text-sm hover:text-red-500 hover:bg-white hover:border-2 hover:border-red-500 text-white text-center w-[80px] bg-red-500 p-1 rounded-lg'>supprimer</a>                                                               
-                                                                            </div>" ;
-                                                                        }
-                                                                    ?>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                </li>
-                                        <?php 
-                                            }
-                                        }while ($questionData = $result->fetch_assoc());
-                                        ?>
-                                    </ul>
                                     <div class="relative pb-8">
                                                 <div class="p-8 bg-white h-[415px] w-full mx-auto">
 
 
-                                                    <form action="Ajouter_reponse.php" method="post" class="relative">
+                                                    <form  method="post" class="relative">
                                                         <div class="pt-5 pl-6 border border-gray-300 rounded-lg shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
-                                                            <input class="hidden" type="text" name="selectedId" value="<?=$_SESSION['id']?>">
-                                                            <input class="hidden" type="text" name="questionId" value="<?=$quetionID?>">
-                                                            <textarea rows="2" name="description" id="description" class="block w-full border-none py-0 resize-none placeholder-gray-500 focus:ring-0 focus:border-indigo-500 sm:text-sm focus:outline-none" placeholder="Write a description..."></textarea>
+                                                            <input class="hidden" type="text" name="reponseId" value="<?=$repId?>">
+                                                            <textarea rows="2" name="description" id="description" class="block w-full border-none py-0 resize-none placeholder-gray-500 focus:ring-0 focus:border-indigo-500 sm:text-sm focus:outline-none" ><?= $ansData['reponse']?></textarea>
                                                             <div aria-hidden="true">
                                                                 <div class="py-2">
                                                                     <div class="h-9"></div>
@@ -358,7 +305,7 @@ $myID = $_SESSION["id"];
                                                                 <?php } ?>
 
                                                                 <div class="flex-shrink-0">
-                                                                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 " name="update_reponse">
                                                                         post
                                                                     </button>
                                                                 </div>
