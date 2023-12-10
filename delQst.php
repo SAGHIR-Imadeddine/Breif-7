@@ -1,36 +1,43 @@
 <?php
-require_once('./connection.php');
+require_once('connection.php');
 
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id_question'])) {
+if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['qst_id'])) {
 
-    $qstId = $_GET['id_question'];
+    $qstId = $_GET['qst_id'];
+    echo" $qstId";
 
-    try {
-        $conn->begin_transaction();
-
-        $del_answer = $conn->prepare("DELETE FROM reponse WHERE id_qst = ?");
-        $del_answer->bind_param('i', $qstId);
-        $del_answer->execute();
-
-        $del_reaction = $conn->prepare("DELETE FROM reaction WHERE id_qst = ?");
-        $del_reaction->bind_param('i', $qstId);
-        $del_reaction->execute();
-
-        $del_question = $conn->prepare("DELETE FROM question WHERE id_question = ?");
-        $del_question->bind_param('i', $qstId);
-        $del_question->execute();
-
-        $conn->commit();
-        header("Location: dashboardUser.php");
-        exit();
-    } catch (mysqli_sql_exception $e) {
-        $conn->rollback();
-        echo "Error: " . $e->getMessage();
-    }
+// Check the connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
 
-$conn->close();
-?>
+try {
+    // Assuming $qstId is the ID you want to delete.
+     // Replace with your actual ID.
 
-        
-        
+    $stmt = mysqli_prepare($conn, "DELETE FROM question WHERE id_question = ?");
+    mysqli_stmt_bind_param($stmt, "i", $qstId);
+    mysqli_stmt_execute($stmt);
+
+    // Check if the deletion was successful
+    $affectedRows = mysqli_stmt_affected_rows($stmt);
+
+    if ($affectedRows > 0) {
+        echo "Record deleted successfully";
+    } else {
+        echo "No records deleted";
+    }
+
+    mysqli_stmt_close($stmt);
+
+    // Redirect to dashboardUser.php after deletion
+    header("Location: dashboardUser.php");
+    exit();
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+
+// Close the connection
+mysqli_close($conn);}
+?>

@@ -189,6 +189,7 @@ if (isset($_SESSION['email'])) {
                 <i class="fa-solid fa-list-check mr-3"></i>
                 Projects
             </a>
+
             <button class="flex items-center active-nav-link text-white py-4 pl-6 nav-item cursor-pointer" id="statisticbutton">
                 <i class="fa-solid fa-chart-simple mr-3"></i>
                 STATISTICS
@@ -505,6 +506,7 @@ if (isset($_SESSION['email'])) {
 
             <main>
                 <div class="bg-gray-100">
+
                     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
 
                         <div>
@@ -535,6 +537,7 @@ if (isset($_SESSION['email'])) {
 
                             </dl>
                         </div>
+
 
                     </div>
                 </div>
@@ -737,11 +740,18 @@ if (isset($_SESSION['email'])) {
         $(document).ready(function() {
             $("#statisticbutton").click(function() {
 
-             
+
+
                 $.get("questionparproject.php", function(data) {
                     $("#nbrquestion").html(data);
                 });
+                $("#ProjectsTable").hide();
+                $("#TeamsTable").hide();
+                $("#MembersTable").hide();
+
+
             });
+
         });
     </script>
 

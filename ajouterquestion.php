@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 function dd($data)
 {
     echo '<pre>';
@@ -8,10 +9,12 @@ function dd($data)
     exit; 
 }
 
+
 $idproject = 0;
 $iduser = 0;
 if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
     $idproject = $_GET["idproject"];
+
     $iduser = $_GET["iduser"];
 }
 
@@ -154,9 +157,6 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
     <aside class="relative bg-sidebar h-screen w-64 hidden sm:block shadow-xl">
         <div class="p-6">
             <a class="text-white text-3xl font-semibold uppercase hover:text-gray-300"><img src="./img/white3.png" alt=""></a>
-            <!-- <button class="w-full bg-white cta-btn font-semibold py-2 mt-5 rounded-br-lg rounded-bl-lg rounded-tr-lg shadow-lg hover:shadow-xl hover:bg-gray-300 flex items-center justify-center">
-                <i class="fas fa-plus mr-3"></i> New Report
-            </button> -->
         </div>
         <nav class="text-white text-base font-semibold pt-3">
             <a class="flex items-center active-nav-link text-white py-4 pl-6 nav-item cursor-pointer" id="TeamsBtn">
@@ -183,12 +183,16 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
     </aside>
 
     <div class="w-full flex flex-col h-screen overflow-y-hidden">
+
         <!-- Desktop Header -->
+
         <header class="w-full items-center bg-blue-950 py-2 px-6 hidden sm:flex">
             <div class="w-1/2"></div>
             <div x-data="{ isOpen: false }" class="relative w-1/2 flex justify-end">
                 <button @click="isOpen = !isOpen" class="realtive z-10 w-12 h-12 rounded-full overflow-hidden border-4 border-gray-400 hover:border-gray-300 focus:border-gray-300 focus:outline-none">
+
                     <!-- <img src="./img/abdellah.png"> -->
+
                     <?php
                     include 'connection.php';
 
@@ -205,7 +209,9 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
             </div>
         </header>
 
+
         <!-- Mobile Header & Nav -->
+
         <header x-data="{ isOpen: false }" class="w-full bg-sidebar py-5 px-6 sm:hidden">
             <div class="flex items-center justify-between">
                 <a href="index.html" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">DATAWARE</a>
@@ -214,6 +220,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                     <i x-show="isOpen" class="fas fa-times"></i>
                 </button>
             </div>
+
 
             <!-- Dropdown Nav -->
             <nav :class="isOpen ? 'flex': 'hidden'" class="flex flex-col pt-4">
@@ -229,9 +236,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                     <i class="fas fa-sign-out-alt mr-3"></i> Sign Out
                 </button>
             </nav>
-            <!-- <button class="w-full bg-white cta-btn font-semibold py-2 mt-5 rounded-br-lg rounded-bl-lg rounded-tr-lg shadow-lg hover:shadow-xl hover:bg-gray-300 flex items-center justify-center">
-                <i class="fas fa-plus mr-3"></i> New Report
-            </button> -->
+
         </header>
 
         <div class="w-full overflow-x-hidden border-t flex flex-col">
@@ -334,6 +339,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                             $tablepivot = "INSERT INTO tagquetion VALUES('$idquestion','$tagId')";
                             $conn->query($tablepivot);
                         }
+
                         if (count($existedTagsIds) > 0) {
                             echo '<script>
                                 Swal.fire({
@@ -353,6 +359,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                         }
                     } else {
                         echo '<script>alert("Error fetching tags: ' . $conn->error . '");</script>';
+
                     }
                     ?>
                     <form class="w-[70%]" action="" method="post">
@@ -378,21 +385,15 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                 <textarea rows="8" name="description" id="description" class="block w-full border-2 border-gray-300 rounded-md py-1 resize-none placeholder-gray-500 focus:ring-0 pl-2 sm:text-sm" placeholder="Write a description..."></textarea>
                             </div>
 
-                            <div>
-                                <input class="hover:bg-green-400 p-2 mt-2 text-center text-black text-xs font-medium bg-gray-200 rounded-full" name="submit_question" type="submit" value="Submit Question">
-                            </div>
+
+                            <a href="dashboardUser.php">
+                                <input id="Submit_Question"class="hover:bg-green-400 p-2 mt-2 text-center text-black text-xs font-medium bg-gray-200 rounded-full" name="submit_question" type="submit" value="Submit Question">
+                </a>
                         </div>
 
                     </form>
                 </div>
             </section>
-
-
-
-
-
-
-
 
         </div>
 
@@ -404,6 +405,12 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
             const tagsContainer = document.getElementById("tagsContainer");
             const tagsInput = document.getElementById("tags");
             const tagIds = document.getElementById('tagIds');
+            const Submit_Question=document.getElementById('Submit_Question');
+            Submit_Question.addEventListener("click",()=>{
+                window.location.href = "dashboardUser.php";
+
+        exit();
+            })
 
             tagsInput.addEventListener("keydown", function(event) {
                 if (event.key === " " && tagsInput.value.trim() !== "") {
@@ -422,7 +429,11 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
+
                                 console.log("sdcfvghbjnk,")
+
+                                
+
                                 const tagElement = document.createElement("div");
                                 tagElement.className = "bg-blue-500 text-white p-1 rounded-md m-1";
                                 tagElement.textContent = lastTag;
@@ -431,6 +442,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                 removeButton.className = "ml-1 text-xs";
                                 removeButton.textContent = "Remove";
                                 removeButton.addEventListener("click", function(event) {
+
                                     event.preventDefault(); // Prevent the default behavior of the button click
                                     console.log(`tagID=${data.tagID}`);
                                     // Make an AJAX request to remove the &tag from the database
@@ -445,7 +457,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                         .then(data => {
                                             if (data.success) {
 
-                                                // Remove the tag element from the container
+                                                // Remove the tag element from the container       
                                                 tagsContainer.removeChild(tagElement);
                                                 Swal.fire({
                                                 icon: "success",
@@ -462,6 +474,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                         });
                                 });
 
+
                                 // Append the remove button to the tag element
                                 tagElement.appendChild(removeButton);
 
@@ -469,6 +482,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                 tagsContainer.appendChild(tagElement);
 
                                 // Clear the input field
+
                                 tagsInput.value = "";
                             } else {
                                 console.error("Error inserting tag:", data.message);
