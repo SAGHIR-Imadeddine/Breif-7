@@ -5,8 +5,10 @@ session_start();
         
         $sql = "SELECT q.id_question AS id_question , q.tittre, q.description AS q_description, q.datecreation AS q_datecreation,
                        uq.image AS questioner_image, uq.firstName AS questioner_firstName, uq.lastName AS questioner_lastName,
+
                        a.id_reponse, a.reponse, a.datecreation AS a_datecreation, a.correct,
-                       ua.image AS answerer_image, ua.firstName AS answerer_firstName, ua.lastName AS answerer_lastName, q.id_user
+                       ua.image AS answerer_image, ua.firstName AS answerer_firstName, ua.lastName AS answerer_lastName, q.id_user, ua.role AS role
+
                 FROM question q
                 LEFT JOIN reponse a ON q.id_question = a.id_qst
                 LEFT JOIN users uq ON q.ID_User = uq.id_user
@@ -232,7 +234,9 @@ session_start();
                     <div class="flex flex-col text-center w-1/6 pr-4 border-gray-500">
                         <img src="<?= $questionData['questioner_image'] ?>" alt="" class="rounded">
                         <p class="font-bold text-blue-500 pt-2"><?= $questionData['questioner_firstName'] ?> <?= $questionData['questioner_lastName'] ?></p>
-                        <p class="text-gray-500 text-sm"><i class="fa-solid fa-user mr-2"></i>User</p>
+
+                        <p class="text-gray-500 text-sm"><i class="fa-solid fa-user mr-2"><?= $questionData['role'] ?></i></p>
+
                     </div>
                     <!-- Question details -->
                     <div class="flex flex-col ml-2 w-5/6 justify-between">
@@ -243,8 +247,37 @@ session_start();
 
                         </div>
                         <div class="flex flex-row gap-5 self-end">
-                            <p class="text-pink-700"><i class="fa-solid fa-heart mr-2"></i>712</p>
-                            <p class="text-blue-900"><i class="fa-solid fa-heart-crack mr-2"></i>28</p>
+
+                        <!-- Like an dislike question  -->
+                        <form action="handle_reactionQ.php" method="post"> 
+                            <input type="hidden" name="action" value="like">
+                            <input type="hidden" name="questionId" value="<?= $questionData['id_question'] ?>">
+                            <button type="submit" class="text-blue-500 hover:text-blue-700 focus:outline-none">
+                               <i class="fa-solid fa-thumbs-up"></i> 
+                                   </button>
+                                  <?php
+                                                                        // Display the number of likes for this answer
+                                    $likesQuery = "SELECT COUNT(*) AS likeCount FROM `reaction` WHERE `id_question` = {$questionData['id_question']} AND `reaction` = 1";
+                                    $likesResult = $conn->query($likesQuery);
+                                    $likeCount = ($likesResult && $likesResult->num_rows > 0) ? $likesResult->fetch_assoc()['likeCount'] : 0;
+                                    ?>
+                                    <span class="text-blue-500"><?= $likeCount ?> Likes</span>
+                        </form>
+
+                        <form action="handle_reactionQ.php" method="post">
+                        <input type="hidden" name="action" value="dislike">
+                        <input type="hidden" name="questionId" value="<?= $questionData['id_question'] ?>">
+                        <button type="submit" class="text-red-500 hover:text-red-700 focus:outline-none">
+                        <i class="fa-solid fa-thumbs-down"></i> 
+                        </button>
+                        <?php
+                        $dislikesQuery = "SELECT COUNT(*) AS dislikeCount FROM `reaction` WHERE `id_question` = {$questionData['id_question']} AND `reaction` = 0";
+                        $dislikesResult = $conn->query($dislikesQuery);
+                        $dislikeCount = ($dislikesResult && $dislikesResult->num_rows > 0) ? $dislikesResult->fetch_assoc()['dislikeCount'] : 0;
+                        ?>
+                        <span class="text-red-500"><?= $dislikeCount ?> Dislikes</span>                                                                
+                        </form>
+
                         </div>
                         <div class="bg-white py-8">
                             <div class="mx-auto">
@@ -258,7 +291,8 @@ session_start();
                                         <?php
                                         do {
                                             if ($questionData['id_reponse']) {
-                                        ?>
+                                      ?>                                              
+
                                                 <li class="list-none">
                                                     <div class="relative pb-8">
                                                         <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
@@ -275,6 +309,8 @@ session_start();
                                                                                 echo "<p class = 'text-md w-max bg-green-300 px-8 rounded-full py-2'><i class='fa-solid fa-circle-check mr-2'></i>This answer is considered correct to the author.</p>";
                                                                             }
                                                                         ?>
+
+                                                                  
                                                                     </div>
                                                                     <p class="mt-0.5 text-sm text-gray-500">
                                                                         Commented On : <?= $questionData['a_datecreation']?>
@@ -288,7 +324,8 @@ session_start();
                                                                     <p class=" border-gray-200"><?= $questionData['reponse'] ?></p>
                                                                 </div>
                                                                 <div class="flex items-center justify-between mt-2 ml-8 space-x-4">
-                                                                    <div class = "flex space-x-4">
+                                                                    <div class = "flex mt-2 ml-8 space-x-4">
+
                                                                     <form action="handle_reaction.php" method="post"> 
                                                                         <input type="hidden" name="action" value="like">
                                                                         <input type="hidden" name="answerId" value="<?= $questionData['id_reponse'] ?>">
@@ -318,6 +355,7 @@ session_start();
                                                                         ?>
                                                                         <span class="text-red-500"><?= $dislikeCount ?> Dislikes</span>                                                                
                                                                     </form>
+
                                                                     </div>
                                                                     <?php
                                                                         if ($questionData['id_user'] == $_SESSION['id']) {
@@ -328,6 +366,7 @@ session_start();
                                                                             }
                                                                         }
                                                                     ?>
+
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -345,7 +384,10 @@ session_start();
                                                         <div class="pt-5 pl-6 border border-gray-300 rounded-lg shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
                                                             <input class="hidden" type="text" name="selectedId" value="<?=$_SESSION['id']?>">
                                                             <input class="hidden" type="text" name="questionId" value="<?=$quetionID?>">
-                                                            <textarea rows="2" name="description" id="description" class="block w-full border-none py-0 resize-none placeholder-gray-500 focus:ring-0 focus:border-indigo-500 sm:text-sm focus:outline-none" placeholder="Write a description..."></textarea>
+
+
+                                                            <textarea rows="2" name="description" id="description" class="block w-full border-none py-0 resize-none placeholder-gray-500 focus:ring-0 focus:border-indigo-500 sm:text-sm focus:outline-none" placeholder="Write a description..." required></textarea>
+
                                                             <div aria-hidden="true">
                                                                 <div class="py-2">
                                                                     <div class="h-9"></div>

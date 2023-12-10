@@ -1,12 +1,17 @@
 <?php 
 include('connection.php');
+
 if(isset($_POST['input'])){
     $input=$_POST['input'];
-    echo"$input";
+ 
     $query = "SELECT q.id_question, q.tittre AS title, q.description AS question_description, q.datecreation, u.image AS user_image, u.firstName AS user_firstName, u.lastName AS user_lastName
     FROM question q
     JOIN users u ON q.ID_User = u.id_user
-    WHERE q.tittre LIKE '{$input}%'"; // slelctionne tout les titres dont il commence par cette valeur et pour % represnte un ou plusieurs caractères  
+    LEFT JOIN tagquetion tq ON q.id_question = tq.ID_Question
+    LEFT JOIN tag t ON tq.ID_Tag = t.id_tag
+    WHERE q.tittre LIKE '{$input}%' OR t.tag_name LIKE '{$input}%'
+    GROUP BY q.id_question"; // slelctionne tout les titres dont il commence par cette valeur et pour % represnte un ou plusieurs caractères  
+
     $result= mysqli_query($conn,$query);
     if(mysqli_num_rows($result) > 0){
         if ($result) {
@@ -33,7 +38,9 @@ if(isset($_POST['input'])){
                 echo '</div>';
 
                 echo '<div class="flex flex-row gap-5 justify-end items-center">';
-                echo '<a href="article.php?id=' . $questionId . '" class="questionDiv p-2 px-4 bg-blue-500 rounded text-white questionDiv">Answers</a>';
+
+                echo '<a href="Answers.php?question_id=' . $questionId . '" class="questionDiv p-2 px-4 bg-blue-500 rounded text-white questionDiv">Answers</a>';
+
                 echo '</div>';
 
                 echo '<div class="flex items-center mb-4">';
