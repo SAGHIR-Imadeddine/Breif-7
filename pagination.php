@@ -1,4 +1,3 @@
-
 <?php
     include 'connection.php';
     session_start();
@@ -9,7 +8,8 @@
     $page = isset($_POST['page_no']) ? $_POST['page_no'] : 1;
     $offset = ($page - 1) * $items_per_page;
 
-    $query = "SELECT q.id_question, q.tittre AS title, q.description AS question_description, q.datecreation, u.image AS user_image, u.firstName AS user_firstName, u.lastName AS user_lastName ,q.ID_User
+    $query = "SELECT q.id_question, q.tittre AS title, q.description AS question_description, q.datecreation, u.image AS user_image, u.firstName AS user_firstName, u.lastName AS user_lastName, q.ID_User
+
             FROM question q
             JOIN users u ON q.ID_User = u.id_user
             LIMIT $offset, $items_per_page";

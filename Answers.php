@@ -1,26 +1,26 @@
 <?php
 session_start();
+$myID = $_SESSION["id"];
  include('connection.php');
  $questionId = isset($_GET['question_id']) ? $_GET['question_id'] : null;
         
         $sql = "SELECT q.id_question AS id_question , q.tittre, q.description AS q_description, q.datecreation AS q_datecreation,
                        uq.image AS questioner_image, uq.firstName AS questioner_firstName, uq.lastName AS questioner_lastName,
 
-                       a.id_reponse, a.reponse, a.datecreation AS a_datecreation, a.correct,
+                       a.id_reponse, a.reponse, a.datecreation AS a_datecreation, a.correct, a.user_id_reponse AS uIdRep,
                        ua.image AS answerer_image, ua.firstName AS answerer_firstName, ua.lastName AS answerer_lastName, q.id_user, ua.role AS role
 
                 FROM question q
                 LEFT JOIN reponse a ON q.id_question = a.id_qst
                 LEFT JOIN users uq ON q.ID_User = uq.id_user
                 LEFT JOIN users ua ON a.user_id_reponse = ua.id_user
-                WHERE q.id_question = '$questionId' ";
+                WHERE q.id_question = '$questionId'";
 
         $result = $conn->query($sql);
-
         if ($result) {
             $questionData = $result->fetch_assoc();
         }
-        $quetionID=$questionData['id_question'];
+        $quetionID = $questionData['id_question'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -290,8 +290,9 @@ session_start();
 
                                         <?php
                                         do {
-                                            if ($questionData['id_reponse']) {
-                                      ?>                                              
+
+                                            if ($questionData['id_reponse']){
+                                        ?>
 
                                                 <li class="list-none">
                                                     <div class="relative pb-8">
@@ -323,6 +324,7 @@ session_start();
                                                                 <div class="mt-2 ml-8 text-sm text-gray-700">
                                                                     <p class=" border-gray-200"><?= $questionData['reponse'] ?></p>
                                                                 </div>
+
                                                                 <div class="flex items-center justify-between mt-2 ml-8 space-x-4">
                                                                     <div class = "flex mt-2 ml-8 space-x-4">
 
@@ -353,8 +355,20 @@ session_start();
                                                                         $dislikesResult = $conn->query($dislikesQuery);
                                                                         $dislikeCount = ($dislikesResult && $dislikesResult->num_rows > 0) ? $dislikesResult->fetch_assoc()['dislikeCount'] : 0;
                                                                         ?>
-                                                                        <span class="text-red-500"><?= $dislikeCount ?> Dislikes</span>                                                                
+                                                                        <span class="text-red-500"><?= $dislikeCount ?> Dislikes</span>                                                              
                                                                     </form>
+
+                                                                    <input type="checkbox" id="correctAnswer<?= $questionData['id_reponse'] ?>" name="correctAnswer" value="1">
+                                                                    <label for="">Mark as Correct</label>
+                                                                    <?php
+                                                                        if ($myID == $questionData['uIdRep']){
+                                                                        echo "<div class='justify-self-end'>
+                                                                                <a href='modifRep.php?ans={$questionData['id_reponse']}&qst={$questionData['id_question']}' class='text-sm hover:text-orange-500 hover:bg-white hover:border-2 hover:border-orange-500 text-white text-center w-[80px] bg-orange-500 p-1 rounded-lg'>modifier</a>
+                                                                                <a href='delRep.php?ans={$questionData['id_reponse']}&qst={$questionData['id_question']}' class='text-sm hover:text-red-500 hover:bg-white hover:border-2 hover:border-red-500 text-white text-center w-[80px] bg-red-500 p-1 rounded-lg'>supprimer</a>                                                               
+                                                                            </div>" ;
+                                                                        }
+                                                                    ?>
+
 
                                                                     </div>
                                                                     <?php
@@ -367,13 +381,14 @@ session_start();
                                                                         }
                                                                     ?>
 
+
                                                                 </div>
                                                             </div>
                                                         </div>
                                                 </li>
-                                        <?php
+                                        <?php 
                                             }
-                                        } while ($questionData = $result->fetch_assoc());
+                                        }while ($questionData = $result->fetch_assoc());
                                         ?>
                                     </ul>
                                     <div class="relative pb-8">

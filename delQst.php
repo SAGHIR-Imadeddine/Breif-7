@@ -1,5 +1,4 @@
 <?php
-
 require_once('connection.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['qst_id'])) {
@@ -38,8 +37,7 @@ try {
     echo "Error: " . $e->getMessage();
 }
 
+
 // Close the connection
 mysqli_close($conn);}
 ?>
-
-
