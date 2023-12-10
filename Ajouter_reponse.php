@@ -7,7 +7,8 @@ include('connection.php');
         $responseDescription = $_POST['description'];
         
         
-        $sql = "INSERT INTO reponse (datecreation, reponse, user_id_reponse, id_qst, archife) VALUES (CURRENT_DATE, '$responseDescription', $userId, $questionId, 1)";
+
+        $sql = "INSERT INTO reponse (reponse, user_id_reponse, id_qst,archife) VALUES ('$responseDescription', $userId, $questionId,1)";
 
         
         if ($conn->query($sql) === TRUE) {

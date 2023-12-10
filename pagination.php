@@ -1,3 +1,4 @@
+
 <?php
     include 'connection.php';
     session_start();
@@ -36,12 +37,14 @@
 
                 <div class="flex flex-row gap-5 justify-end items-center">
                 <a href="Answers.php?question_id=<?= $questionId ?>" class="questionDiv p-2 px-4 bg-blue-500 rounded text-white questionDiv">Answers</a>
+
                 <?php
                     if($user == $row['ID_User']){
                         echo "<a href='modifQST.php?qst_id={$row['id_question']}' class='questionDiv p-2 px-4 bg-orange-500 rounded text-white questionDiv'>modifier</a>
                               <a href='./delQST.php?qst_id={$row['id_question']}'  class='questionDiv p-2 px-4 bg-red-600 rounded text-white questionDiv'>supprimer</a>";
                     }
                     ?>
+
                 </div>
 
                 <div class="flex items-center mb-4">
