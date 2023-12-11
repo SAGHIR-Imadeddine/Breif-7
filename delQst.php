@@ -37,9 +37,7 @@ try {
     echo "Error: " . $e->getMessage();
 }
 
+
 // Close the connection
 mysqli_close($conn);}
 ?>
-
-
-

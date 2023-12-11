@@ -414,6 +414,7 @@ session_start();
 
 
 
+
             <main class="w-full grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-5 p-6 justify-center items-center hidden gap-5" id="MembersTable">
                 <h1 class="text-3xl text-black pb-6 col-span-1 md:col-span-2 lg:col-span-5">Members</h1>
                 <?php
@@ -435,6 +436,7 @@ session_start();
                                     <p class = "text-white text-center">' . $teamName . '</p>
                                 </div>
                             </div>';
+
 
 
                     $MembersQuery = "SELECT * FROM users WHERE equipeID = $teamId";
@@ -462,6 +464,7 @@ session_start();
                             // Handle the case where the scrum master is not found
                             $MembersFirstName = 'N/A';
                             $MembersLastName = 'N/A';
+
                         }
                         echo '
                                 <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow">
@@ -607,7 +610,6 @@ session_start();
             </main>
         </div>
 
-
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script>
             $(document).ready(function() {
@@ -616,10 +618,12 @@ session_start();
 
                     if (input != "") {
                         // alert(input);
+
                         $.ajax({
                             url: "livesearch.php",
                             method: "POST",
                             data: {
+
                                 input: input
                             },
                             success: function(data) {
@@ -641,7 +645,6 @@ session_start();
 
             })
          
-
             const btnajoutquestion = document.getElementById("btnajoutquestion");
             const formajouterquestion = document.querySelector(".formajouterquestion");
             btnajoutquestion.addEventListener("click", () => {

@@ -1,24 +1,26 @@
 <?php
 session_start();
+$myID = $_SESSION["id"];
  include('connection.php');
  $questionId = isset($_GET['question_id']) ? $_GET['question_id'] : null;
         
         $sql = "SELECT q.id_question AS id_question , q.tittre, q.description AS q_description, q.datecreation AS q_datecreation,
                        uq.image AS questioner_image, uq.firstName AS questioner_firstName, uq.lastName AS questioner_lastName,
-                       a.id_reponse, a.reponse, a.datecreation AS a_datecreation,
-                       ua.image AS answerer_image, ua.firstName AS answerer_firstName, ua.lastName AS answerer_lastName , ua.role AS role
+
+                       a.id_reponse, a.reponse, a.datecreation AS a_datecreation, a.correct, a.user_id_reponse AS uIdRep,
+                       ua.image AS answerer_image, ua.firstName AS answerer_firstName, ua.lastName AS answerer_lastName, q.id_user, ua.role AS role
+
                 FROM question q
                 LEFT JOIN reponse a ON q.id_question = a.id_qst
                 LEFT JOIN users uq ON q.ID_User = uq.id_user
                 LEFT JOIN users ua ON a.user_id_reponse = ua.id_user
-                WHERE q.id_question = '$questionId' ";
+                WHERE q.id_question = '$questionId'";
 
         $result = $conn->query($sql);
-
         if ($result) {
             $questionData = $result->fetch_assoc();
         }
-        $quetionID=$questionData['id_question'];
+        $quetionID = $questionData['id_question'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -232,7 +234,9 @@ session_start();
                     <div class="flex flex-col text-center w-1/6 pr-4 border-gray-500">
                         <img src="<?= $questionData['questioner_image'] ?>" alt="" class="rounded">
                         <p class="font-bold text-blue-500 pt-2"><?= $questionData['questioner_firstName'] ?> <?= $questionData['questioner_lastName'] ?></p>
+
                         <p class="text-gray-500 text-sm"><i class="fa-solid fa-user mr-2"><?= $questionData['role'] ?></i></p>
+
                     </div>
                     <!-- Question details -->
                     <div class="flex flex-col ml-2 w-5/6 justify-between">
@@ -243,6 +247,7 @@ session_start();
 
                         </div>
                         <div class="flex flex-row gap-5 self-end">
+
                         <!-- Like an dislike question  -->
                         <form action="handle_reactionQ.php" method="post"> 
                             <input type="hidden" name="action" value="like">
@@ -272,6 +277,7 @@ session_start();
                         ?>
                         <span class="text-red-500"><?= $dislikeCount ?> Dislikes</span>                                                                
                         </form>
+
                         </div>
                         <div class="bg-white py-8">
                             <div class="mx-auto">
@@ -284,17 +290,28 @@ session_start();
 
                                         <?php
                                         do {
-                                            if ($questionData['id_reponse']) {
+
+                                            if ($questionData['id_reponse']){
                                         ?>
+
                                                 <li class="list-none">
                                                     <div class="relative pb-8">
                                                         <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
                                                         <div class="relative flex flex-col items-start space-x-3">
-                                                            <div class="flex gap-4">
+                                                            <div class="flex gap-4 w-full">
                                                                 <img class="h-10 w-10 rounded-full bg-gray-400  ring-8 ring-white" src="<?= $questionData['answerer_image'] ?>" alt="">
-                                                                <div>
-                                                                    <div class="text-sm">
-                                                                        <a href="#" class="font-medium text-gray-900"><?= $questionData['answerer_firstName'] ?> <?= $questionData['answerer_lastName'] ?></a>
+                                                                <div class = "w-full">
+                                                                    <div class = "flex flex-row justify-between w-full items-center">
+                                                                        <div class="text-sm">
+                                                                            <a href="#" class="font-medium text-gray-900"><?= $questionData['answerer_firstName'] ?> <?= $questionData['answerer_lastName'] ?></a>
+                                                                            </div>
+                                                                        <?php
+                                                                            if ($questionData['correct'] == 0) {
+                                                                                echo "<p class = 'text-md w-max bg-green-300 px-8 rounded-full py-2'><i class='fa-solid fa-circle-check mr-2'></i>This answer is considered correct to the author.</p>";
+                                                                            }
+                                                                        ?>
+
+                                                                  
                                                                     </div>
                                                                     <p class="mt-0.5 text-sm text-gray-500">
                                                                         Commented On : <?= $questionData['a_datecreation']?>
@@ -307,7 +324,10 @@ session_start();
                                                                 <div class="mt-2 ml-8 text-sm text-gray-700">
                                                                     <p class=" border-gray-200"><?= $questionData['reponse'] ?></p>
                                                                 </div>
-                                                                <div class="flex mt-2 ml-8 space-x-4">
+
+                                                                <div class="flex items-center justify-between mt-2 ml-8 space-x-4">
+                                                                    <div class = "flex mt-2 ml-8 space-x-4">
+
                                                                     <form action="handle_reaction.php" method="post"> 
                                                                         <input type="hidden" name="action" value="like">
                                                                         <input type="hidden" name="answerId" value="<?= $questionData['id_reponse'] ?>">
@@ -335,17 +355,40 @@ session_start();
                                                                         $dislikesResult = $conn->query($dislikesQuery);
                                                                         $dislikeCount = ($dislikesResult && $dislikesResult->num_rows > 0) ? $dislikesResult->fetch_assoc()['dislikeCount'] : 0;
                                                                         ?>
-                                                                        <span class="text-red-500"><?= $dislikeCount ?> Dislikes</span>                                                                
+                                                                        <span class="text-red-500"><?= $dislikeCount ?> Dislikes</span>                                                              
                                                                     </form>
+
                                                                     <input type="checkbox" id="correctAnswer<?= $questionData['id_reponse'] ?>" name="correctAnswer" value="1">
-                                                                            Mark as Correct
+                                                                    <label for="">Mark as Correct</label>
+                                                                    <?php
+                                                                        if ($myID == $questionData['uIdRep']){
+                                                                        echo "<div class='justify-self-end'>
+                                                                                <a href='modifRep.php?ans={$questionData['id_reponse']}&qst={$questionData['id_question']}' class='text-sm hover:text-orange-500 hover:bg-white hover:border-2 hover:border-orange-500 text-white text-center w-[80px] bg-orange-500 p-1 rounded-lg'>modifier</a>
+                                                                                <a href='delRep.php?ans={$questionData['id_reponse']}&qst={$questionData['id_question']}' class='text-sm hover:text-red-500 hover:bg-white hover:border-2 hover:border-red-500 text-white text-center w-[80px] bg-red-500 p-1 rounded-lg'>supprimer</a>                                                               
+                                                                            </div>" ;
+                                                                        }
+                                                                    ?>
+
+
+                                                                    </div>
+                                                                    <?php
+                                                                        if ($questionData['id_user'] == $_SESSION['id']) {
+                                                                            if ($questionData['correct'] == 1) {
+                                                                                echo '<a href="markSolution.php?id='. $questionData['id_reponse'] .'&function=0" class = "p-2 px-4 bg-green-500 text-white rounded"><i class="fa-solid fa-circle-check mr-2"></i>Mark as solution</a>';
+                                                                            } else {
+                                                                                echo '<a href="markSolution.php?id='. $questionData['id_reponse'] .'&function=1" class = "p-2 px-4 bg-red-500 text-white rounded"><i class="fa-solid fa-circle-xmark mr-2"></i>Unmark as solution</a>';
+                                                                            }
+                                                                        }
+                                                                    ?>
+
+
                                                                 </div>
                                                             </div>
                                                         </div>
                                                 </li>
-                                        <?php
+                                        <?php 
                                             }
-                                        } while ($questionData = $result->fetch_assoc());
+                                        }while ($questionData = $result->fetch_assoc());
                                         ?>
                                     </ul>
                                     <div class="relative pb-8">
@@ -356,7 +399,10 @@ session_start();
                                                         <div class="pt-5 pl-6 border border-gray-300 rounded-lg shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
                                                             <input class="hidden" type="text" name="selectedId" value="<?=$_SESSION['id']?>">
                                                             <input class="hidden" type="text" name="questionId" value="<?=$quetionID?>">
+
+
                                                             <textarea rows="2" name="description" id="description" class="block w-full border-none py-0 resize-none placeholder-gray-500 focus:ring-0 focus:border-indigo-500 sm:text-sm focus:outline-none" placeholder="Write a description..." required></textarea>
+
                                                             <div aria-hidden="true">
                                                                 <div class="py-2">
                                                                     <div class="h-9"></div>

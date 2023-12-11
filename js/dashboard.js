@@ -12,6 +12,7 @@ const membersTable = document.getElementById("MembersTable");
 const questionsBtn = document.getElementById("QuestionsBtn");
 const questionsTable = document.getElementById("QuestionsTable");
 const questionDiv = document.querySelectorAll(".questionDiv");
+const projectQue = document.querySelectorAll(".projectQue");
 
 const sectionTable = document.getElementById("SectionTable");
 
@@ -104,22 +105,59 @@ questionDiv.forEach((element) => {
     });
 });
 
-$(document).ready(function(){
-    showdata();
-  }); 
- function showdata(page)
- {
-   $.ajax({
-       url: 'pagination.php',
-       method: 'post',
-       data: {page_no:page},
-       success: function(result)
-       {
-         $("#result").html(result);
-       }
-     });
- }
- $(document).on("click",".pagination a", function(){
- var page = $(this).attr('id');
- showdata(page);
- });
+projectQue.forEach((element) => {
+    element.addEventListener("click", toggleQuestions);
+});
+var currentProjectId = null;
+
+$(document).ready(function () {
+    var currentPage = 1;
+    var currentDateFilter = 'recent';
+
+
+    showdata(currentPage, currentDateFilter, currentProjectId);
+});
+
+function showdata(page, dateFilter, projectId) {
+    var myQuestions = $("#myQuestionsLink").hasClass("active") ? 'true' : 'false';
+    currentPage = page;
+    currentDateFilter = dateFilter;
+
+    $.ajax({
+        url: 'pagination.php',
+        method: 'post',
+        data: { page_no: page, my_questions: myQuestions, date_filter: dateFilter, project_id: projectId },
+        success: function (result) {
+            $("#result").html(result);
+        }
+    });
+}
+
+$(document).on("click", ".dateFilterButton", function () {
+    var page = 1;
+    var dateFilter = $(this).data('filter');
+    showdata(page, dateFilter, currentProjectId);
+});
+
+$(document).on("click", ".pagination a", function () {
+    var page = $(this).attr('id');
+    showdata(page, currentDateFilter, currentProjectId);
+});
+
+$(document).on("click", "#myQuestionsLink", function () {
+    $(this).toggleClass("active");
+    var page = 1;
+    showdata(page, currentDateFilter, currentProjectId);
+});
+
+function sendData(projectId) {
+    currentProjectId = projectId;
+    var page = 1;
+    showdata(page, currentDateFilter, currentProjectId);
+}
+
+$(document).on("click", "#allProjectsButton", function () {
+    currentProjectId = null;
+    var page = 1;
+    showdata(page, currentDateFilter, currentProjectId);
+});

@@ -1,6 +1,5 @@
 <?php
 include 'connection.php';
-
 // Récupération des projets avec le nombre de questions
 $query = "SELECT p.id_project, p.name AS project_name, COUNT(q.id_question) AS question_count
           FROM projects p
@@ -8,9 +7,11 @@ $query = "SELECT p.id_project, p.name AS project_name, COUNT(q.id_question) AS q
           GROUP BY p.id_project, p.name";
 $result = mysqli_query($conn, $query);
 
+
 // Affichage des projets avec le nombre de questions
 if ($result) {
     echo '<div class="flex flex-wrap justify-center">';
+
     while ($row = mysqli_fetch_assoc($result)) {
         $idProject = $row['id_project'];
         $projectName = $row['project_name'];
@@ -116,8 +117,10 @@ if ($resultTopUser) {
     echo "<hr class='w-full h-1 my-4 bg-black border-0 rounded'>";
     mysqli_free_result($resultTopUser);
 } else {
+
     echo "Error executing query: " . mysqli_error($conn);
 }
 
 mysqli_close($conn);
 ?>
+

@@ -14,6 +14,7 @@ include 'userCheck.php';
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="./js/scrumMaster.js" defer></script>
     <script src="https://kit.fontawesome.com/736a1ef302.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -135,6 +136,10 @@ include 'userCheck.php';
                 <i class="fa-solid fa-list-check mr-3"></i>
                 Projects
             </a>
+            <a class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item cursor-pointer" id="QuestionsBtn">
+                <i class="fa-solid fa-circle-question mr-3"></i>
+                Questions
+            </a>
         </nav>
         <a href="logout.php" class="absolute w-full upgrade-btn bottom-0 active-nav-link text-white flex items-center justify-center py-4">
             <i class="fas fa-arrow-circle-up mr-3"></i>
@@ -206,7 +211,7 @@ include 'userCheck.php';
                     // User is logged in
                     $equipeID = $_SESSION['equipeID'];
                     $currentMemberID = $_SESSION['id'];
-                    $sql = "SELECT * FROM teams WHERE scrumMasterID = $currentMemberID OR id = $equipeID";
+                    $sql = "SELECT * FROM teams WHERE scrumMasterID = $currentMemberID OR id_team = $equipeID";
                     
                     $result = $conn->query($sql);
 
@@ -217,7 +222,7 @@ include 'userCheck.php';
                         $projectID = $row['projectID'];
                         $scrumMasterID = $row['scrumMasterID'];
 
-                        $scrumMasterQuery = "SELECT * FROM users WHERE id = $scrumMasterID";
+                        $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $scrumMasterID";
                         $scrumMasterResult = $conn->query($scrumMasterQuery);
 
                         if ($scrumMasterResult->num_rows > 0) {
@@ -245,10 +250,10 @@ include 'userCheck.php';
                         echo '</div>';
                         echo "<p class='mb-3 font-normal text-gray-700' class = 'teamDescHTML' data-id = '$teamDescription'>$teamDescription</p>";
                         echo '<div class = "flex flex-row items-center justify-between">';
-                        echo '<a href="#" class="inline-flex items-center px-8 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 modifyBtn" data-id="'. $row['id'] .'">';
+                        echo '<a href="#" class="inline-flex items-center px-8 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 modifyBtn" data-id="'. $row['id_team'] .'">';
                         echo '<i class="fa-solid fa-gear mr-2"></i>Modify' ;
                         echo '</a>';
-                        echo '<a href="removeTeam.php?id='. $row['id'] .'" class="inline-flex items-center px-8 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300">';
+                        echo '<a href="removeTeam.php?id='. $row['id_team'] .'" class="inline-flex items-center px-8 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300">';
                         echo '<i class="fa-solid fa-trash mr-2"></i>Remove';
                         echo '</a>';
                         echo '</div>';
@@ -267,7 +272,7 @@ include 'userCheck.php';
                     // Check if the user is logged in
                     // User is logged in
                     $equipeID = $_SESSION['equipeID'];
-                    $sql = "SELECT projectID FROM teams WHERE id = $equipeID";
+                    $sql = "SELECT projectID FROM teams WHERE id_team = $equipeID";
 
                     $result = $conn->query($sql);
 
@@ -289,7 +294,7 @@ include 'userCheck.php';
                                 $projectsDateEnd = $projectsData['date_end'];
                                 $projectsStatus = $projectsData['statut'];
 
-                                $scrumMasterQuery = "SELECT * FROM users WHERE id = $projectsScrum";
+                                $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $projectsScrum";
                                 $scrumMasterResult = $conn->query($scrumMasterQuery);
 
                                 if ($scrumMasterResult->num_rows > 0) {
@@ -303,7 +308,7 @@ include 'userCheck.php';
                                     $scrumMasterLastName = 'N/A';
                                 }
 
-                                $prodMasterQuery = "SELECT * FROM users WHERE id = $projectsProd";
+                                $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
                                 $prodMasterResult = $conn->query($prodMasterQuery);
 
                                 if ($prodMasterResult->num_rows > 0) {
@@ -334,8 +339,8 @@ include 'userCheck.php';
                                 echo "<p class='mb-3 font-normal text-gray-700'>$projectsDesc</p>";
                                 echo '<div class="flex flex-row items-center justify-between">';
                                 echo '<div>';
-                                echo '<a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">';
-                                echo 'More details';
+                                echo '<a href="#" class="projectQue inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300" onclick="sendData(' . $projectsData['id_project'] . ')" data-id="' . $projectsData['id_project'] . '">';
+                                echo 'View project questions';
                                 echo '<svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">';
                                 echo '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>';
                                 echo '</a>';
@@ -371,7 +376,7 @@ include 'userCheck.php';
                         $teamImg = $row['image'];
                         $teamName = $row['teamName'];
                         $scrumMasterID = $row['scrumMasterID'];
-                        $teamId = $row['id'];
+                        $teamId = $row['id_team'];
 
                         echo '
                             <div class="w-full h-48 col-span-1 md:col-span-2 lg:col-span-5 bg-white border border-gray-200 rounded-lg shadow sticky top-0" style = "background-image: url(' . $teamImg . '); background-position-x: center; background-position-y: 20%; background-repeat: no-repeat; background-size: cover;">
@@ -419,7 +424,7 @@ include 'userCheck.php';
                                     </div>
                                     <div class="flex pb-2 justify-center">
                                     <form method = "POST" action = "remove.php">
-                                        <input type="hidden" name="userID" value="'. $MembersData['id'] .'">
+                                        <input type="hidden" name="userID" value="'. $MembersData['id_user'] .'">
                                         <input type="submit" value = "Remove" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300" id = "removeBtn">
                                     </form>
                                     </div>
@@ -451,14 +456,14 @@ include 'userCheck.php';
                     $result = $conn->query($sql);
 
                     while ($row = $result->fetch_assoc()) {
-                        $teamId = $row['id'];
+                        $teamId = $row['id_team'];
                         $teamImg = $row['image'];
                         $teamDescription = $row['description'];
                         $teamName = $row['teamName'];
                         $projectID = $row['projectID'];
                         $scrumMasterID = $row['scrumMasterID'];
 
-                        $scrumMasterQuery = "SELECT * FROM users WHERE id = $scrumMasterID";
+                        $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $scrumMasterID";
                         $scrumMasterResult = $conn->query($scrumMasterQuery);
 
                         if ($scrumMasterResult->num_rows > 0) {
@@ -522,7 +527,7 @@ include 'userCheck.php';
                             $MembersLastName = 'N/A';
                         }
                         echo '
-                            <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow memberSelect cursor-pointer transition-all" data-id="'. $MembersData['id'] .'">
+                            <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow memberSelect cursor-pointer transition-all" data-id="'. $MembersData['id_user'] .'">
                                 <div class="flex flex-col items-center py-2">
                                     <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="' . $MembersImg . '" alt="' . $MembersFirstName . ' ' . $MembersLastName . '"/>
                                     <h5 class="mb-1 text-xl font-medium text-'. $MembersColor .'-900">' . $MembersFirstName . ' ' . $MembersLastName . '</h5>
@@ -578,6 +583,139 @@ include 'userCheck.php';
                     </div>
                 </form>
             </main>
+            <main class="w-full flex flex-col p-6 hidden" id="QuestionsTable">
+            <div class="col-span-3 pb-6 flex flex-row justify-between">
+                <h1 class="text-3xl text-black">All questions</h1>
+                <a href="#" class="p-2 px-4 bg-blue-500 rounded text-white">My questions</a>
+            </div>
+            <div class="flex flex-col gap-5" id = "result">  
+
+            </div>
+            <div>
+
+            </div>
+        </main>
+
+        <main class="w-full flex flex-col p-6 hidden" id="SectionTable">
+            <div class="w-full bg-white rounded p-4 border-t border-gray-500">
+                <div class="flex flex-row">
+                    <div class="flex flex-col text-center w-1/6 pr-4 border-gray-500">
+                        <img src="./img/zakaria.png" alt="" class="rounded">
+                        <p class="font-bold text-blue-500 pt-2">Zakaria Loulida</p>
+                        <p class="text-gray-500 text-sm"><i class="fa-solid fa-user mr-2"></i>User</p>
+                    </div>
+                    <div class="flex flex-col ml-2 w-5/6 justify-between">
+                        <p class="text-sm text-blue-700 mb-2">Apr 22, 2018</p>
+                        <div class="p-4 bg-gray-100 grow">
+                            <p class="font-bold text-2xl">How to center a div in Tailwind CSS?</p>
+                            <p class="text-md">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti, nemo sit, temporibus debitis unde dolor rerum itaque ducimus totam recusandae, quidem nihil architecto sed. Aliquid labore dolorem corrupti distinctio unde?
+                                Doloribus quos fuga id eaque cupiditate molestias culpa inventore laboriosam alias! Alias sint corrupti itaque ratione. Nisi aspernatur eum officiis, quod debitis nobis temporibus nemo blanditiis adipisci, aliquid placeat ullam!
+                                Sit perspiciatis tempora accusamus iste eos pariatur suscipit, exercitationem mollitia vero rem blanditiis. Provident, iure distinctio modi recusandae esse consequuntur accusamus, voluptas molestiae fuga cumque doloribus. Voluptatem, culpa illo. Nulla!</p>
+                        </div>
+                        <div class="flex flex-row gap-5 self-end">
+                            <p class="text-pink-700"><i class="fa-solid fa-heart mr-2"></i>712</p>
+                            <p class="text-blue-900"><i class="fa-solid fa-heart-crack mr-2"></i>28</p>
+                        </div>
+                        <div class="bg-white py-8">
+                            <div class="mx-auto px-6">
+
+                                <div class="flow-root">
+                                    <ul role="list" class="list-none -mb-8">
+
+                                        <li class="list-none">
+                                            <div class="relative pb-8">
+
+                                                <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                                                <div class="relative flex flex-col items-start space-x-3">
+                                                    <div class="flex gap-4">
+
+
+                                                        <img class="h-10 w-10 rounded-full bg-gray-400  ring-8 ring-white" src="https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=8&amp;w=256&amp;h=256&amp;q=80" alt="">
+
+                                                        <div>
+                                                            <div class="text-sm">
+                                                                <a href="#" class="font-medium text-gray-900">Eduardo Benz</a>
+                                                            </div>
+                                                            <p class="mt-0.5 text-sm text-gray-500">
+                                                                Commented 6d ago
+                                                            </p>
+                                                        </div>
+
+
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="min-w-0 flex-1">
+
+                                                    <div class="mt-2 ml-8 text-sm text-gray-700">
+                                                        <p>
+                                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tincidunt nunc ipsum tempor purus vitae id. Morbi in vestibulum nec varius. Et diam cursus quis sed purus nam.
+                                                        </p>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                </div>
+                                </li>
+
+                                <li class="list-none">
+
+                                    <div class="relative pb-8">
+
+
+
+                                        <div class="p-8 bg-white h-[415px] w-full mx-auto">
+
+
+                                            <form action="#" class="relative">
+                                                <div class="pt-5 pl-6 border border-gray-300 rounded-lg shadow-sm overflow-hidden focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
+
+                                                    <textarea rows="2" name="description" id="description" class="block w-full border-none py-0 resize-none placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Write a description..."></textarea>
+
+                                                    <!-- Spacer element to match the height of the toolbar -->
+                                                    <div aria-hidden="true">
+                                                        <div class="py-2">
+                                                            <div class="h-9"></div>
+                                                        </div>
+                                                        <div class="h-px"></div>
+                                                        <div class="py-2">
+                                                            <div class="py-px">
+                                                                <div class="h-9"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="absolute bottom-0 inset-x-px">
+                                                    <!-- Actions: These are just examples to demonstrate the concept, replace/wire these up however makes sense for your project. -->
+
+                                                    <div class="border-t border-gray-200 px-2 py-2 flex justify-between items-center space-x-3 sm:px-3">
+                                                        <img x-show="!(assigned.value === null)" src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80" :src="assigned.avatar" alt="" class="flex-shrink-0 h-10 w-10 rounded-full" x-description="Selected user avatar, show/hide based on listbox state.">
+
+
+                                                        <div class="flex-shrink-0">
+                                                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                                post
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+
+                                        </div>
+
+                                    </div>
+                                </li>
+                            </div>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
         
     </div>

@@ -1,38 +1,57 @@
 <?php
-include('connection.php');
 session_start();
+include('connection.php');
+$myID = $_SESSION["id"];
+ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_reponse'])) {
+    $repId = $_POST['reponseId'];
+    $description = $_POST['description'];
+    $updatereponse="UPDATE reponse SET reponse ='$description' where id_reponse= '$repId'";
+    $updateResultat=$conn->query($updatereponse);
 
-// Check if the user is logged in
-if (!isset($_SESSION['id'])) {
-    header("Location: login.php"); // Redirect to the login page if not logged in
-    exit();
+
+    if($updateResultat){
+        header("Location: dashboardUser.php");
+    }
+}
+if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['ans'])) {
+    $repId = $_GET['ans'];
 }
 
-// Check if the question ID is provided in the URL
-if (!isset($_GET['qst_id'])) {
-    echo "Question ID not provided.";
-    exit();
-}
 
-$questionId = $_GET['qst_id'];
+ $questionId = isset($_GET['qst']) ? $_GET['qst'] : null;
+        
+        $sql = "SELECT q.id_question AS id_question , q.tittre, q.description AS q_description, q.datecreation AS q_datecreation,
+                       uq.image AS questioner_image, uq.firstName AS questioner_firstName, uq.lastName AS questioner_lastName,
+                       a.id_reponse, a.reponse, a.datecreation AS a_datecreation, a.user_id_reponse AS uIdRep,
+                       ua.image AS answerer_image, ua.firstName AS answerer_firstName, ua.lastName AS answerer_lastName
+                FROM question q
+                LEFT JOIN reponse a ON q.id_question = a.id_qst
+                LEFT JOIN users uq ON q.ID_User = uq.id_user
+                LEFT JOIN users ua ON a.user_id_reponse = ua.id_user
+                WHERE q.id_question = '$questionId'";
 
-// Fetch the existing question details from the database
-$query = "SELECT * FROM question WHERE id_question = $questionId";
-$result = $conn->query($query);
+        $result = $conn->query($sql);
+        if ($result) {
+            $questionData = $result->fetch_assoc();
 
-if ($result->num_rows > 0) {
-    $questionData = $result->fetch_assoc();
-} else {
-    echo "Question not found.";
-    exit();
-}
+        }
+        $quetionID = $questionData['id_question'];
+        $query = "SELECT * FROM reponse where id_reponse =  $repId";
+
+            $res = $conn->query($query);
+            if ($res) {
+            $ansData = $res->fetch_assoc();
+            }
+
+        
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modify Question</title>
+    <meta name="viewport" contents="width=device-width, initial-scale=1.0">
+    <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="./js/dashboard.js" defer></script>
@@ -230,33 +249,80 @@ if ($result->num_rows > 0) {
                 <i class="fas fa-plus mr-3"></i> New Report
             </button> -->
         </header>
-</head>
-<body>
-    <h1>Modify Question</h1>
 
-    <form class="w-[70%]" action="update_question.php" method="post">
-    <div class="w-[80%] p-12 z-10 mx-[10%] bg-white">
+        <main class="w-full flex flex-col p-6 overflow-y-auto" id="SectionTable">
+            <div class="w-full bg-white rounded p-4 border-t border-gray-500">
+                <div class="flex flex-row">
+                    <!-- User who asked the question -->
+                    <div class="flex flex-col text-center w-1/6 pr-4 border-gray-500">
+                        <img src="<?= $questionData['questioner_image'] ?>" alt="" class="rounded">
+                        <p class="font-bold text-blue-500 pt-2"><?= $questionData['questioner_firstName'] ?> <?= $questionData['questioner_lastName'] ?></p>
+                        <p class="text-gray-500 text-sm"><i class="fa-solid fa-user mr-2"></i>User</p>
+                    </div>
+                    <!-- Question details -->
+                    <div class="flex flex-col ml-2 w-5/6 justify-between">
+                        <p class="text-sm text-blue-700 mb-2"><?= $questionData['q_datecreation'] ?></p>
+                        <div class="p-4 bg-gray-100 grow">
+                            <p class="font-bold text-2xl"><?= $questionData['tittre'] ?></p>
+                            <p class="text-md"><?= $questionData['q_description'] ?></p>
 
-        <!-- Hidden input for question ID -->
-        <input type="hidden" name="questionId" value="<?= $questionData['id_question'] ?>">
+                        </div>
+                        <div class="flex flex-row gap-5 self-end">
+                            <p class="text-pink-700"><i class="fa-solid fa-heart mr-2"></i>712</p>
+                            <p class="text-blue-900"><i class="fa-solid fa-heart-crack mr-2"></i>28</p>
+                        </div>
+                        <div class="bg-white py-8">
+                            <div class="mx-auto">
 
-        <!-- Modified title input -->
-        <div class="relative border border-gray-300 rounded-md px-3 py-2 shadow-sm">
-            <label for="updated_title" class="absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium text-gray-900">Title</label>
-            <input type="text"  id="updated_title" class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Title" name="title" value="<?= $questionData['tittre'] ?>" required>
-        </div>
+                                <div class="flow-root">
 
-        <!-- Hidden input for tag IDs -->
 
-        <!-- Modified description input -->
-        <div class="mt-2">
-            <textarea rows="8" name="description" id="updated_description" class="block w-full border-2 border-gray-300 rounded-md py-1 resize-none placeholder-gray-500 focus:ring-0 pl-2 sm:text-sm" placeholder="Write a description..."required> <?= $questionData['description'] ?></textarea>
-        </div>
+                                    <div class="relative pb-8">
+                                                <div class="p-8 bg-white h-[415px] w-full mx-auto">
 
-        <!-- Updated submit button -->
-        <button type="submit" class="hover:bg-green-400 p-2 mt-2 text-center text-black text-xs font-medium bg-gray-200 rounded-full">Update Question</button>
 
-    </div>
-</form>
+                                                    <form  method="post" class="relative">
+                                                        <div class="pt-5 pl-6 border border-gray-300 rounded-lg shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
+                                                            <input class="hidden" type="text" name="reponseId" value="<?=$repId?>">
+                                                            <textarea rows="2" name="description" id="description" class="block w-full border-none py-0 resize-none placeholder-gray-500 focus:ring-0 focus:border-indigo-500 sm:text-sm focus:outline-none" ><?= $ansData['reponse']?></textarea>
+                                                            <div aria-hidden="true">
+                                                                <div class="py-2">
+                                                                    <div class="h-9"></div>
+                                                                </div>
+                                                                <div class="h-px"></div>
+                                                                <div class="py-2">
+                                                                    <div class="py-px">
+                                                                        <div class="h-9"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="absolute bottom-0 inset-x-px">
+
+                                                            <div class="border-t border-gray-200 px-2 py-2 flex justify-between items-center space-x-3 sm:px-3">
+                                                                <?php if (isset($questionData['id_reponse']) && isset($questionData['answerer_image'])) { ?>
+                                                                    <img src="<?= $questionData['answerer_image'] ?>" alt="" class="flex-shrink-0 h-10 w-10 rounded-full">
+                                                                <?php } ?>
+
+                                                                <div class="flex-shrink-0">
+                                                                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 " name="update_reponse">
+                                                                        post
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </main>
+        
 </body>
 </html>
