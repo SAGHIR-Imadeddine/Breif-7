@@ -361,8 +361,8 @@ session_start();
                             echo "<p class='mb-3 font-normal text-gray-700'>$projectsDesc</p>";
                             echo '<div class="flex flex-row items-center justify-between">';
                             echo '<div>';
-                            echo '<a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">';
-                            echo 'More details';
+                            echo '<a href="#" class="projectQue inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300" onclick="sendData(' . $projectsData['id_project'] . ')" data-id="' . $projectsData['id_project'] . '">';
+                            echo 'View project questions';
                             echo '<svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">';
                             echo '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>';
                             echo '</a>';
@@ -617,8 +617,7 @@ session_start();
 
         <main class="w-full flex flex-col p-6 hidden" id="QuestionsTable">
             <div class="col-span-3 pb-6 flex flex-row justify-between">
-                <h1 class="text-3xl text-black">All questions</h1>
-                <a href="#" class="p-2 px-4 bg-blue-500 rounded text-white">My questions</a>
+                <h1 class="text-3xl text-black">Questions</h1>
             </div>
             <div class="flex flex-col gap-5" id = "result">  
 

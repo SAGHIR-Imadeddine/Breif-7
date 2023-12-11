@@ -11,7 +11,7 @@ if (isset($_SESSION['email'])) {
     $result = $stmt->get_result();
     
     $row = $result->fetch_assoc();
-    $_SESSION['id'] = $row['id'];
+    $_SESSION['id'] = $row['id_user'];
     $_SESSION['image'] = $row['image'];
     $_SESSION['firstName'] = $row['firstName'];
     $_SESSION['lastName'] = $row['lastName'];
@@ -41,6 +41,7 @@ if (isset($_SESSION['email'])) {
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="./js/prodOwner.js" defer></script>
     <script src="https://kit.fontawesome.com/736a1ef302.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -162,6 +163,10 @@ if (isset($_SESSION['email'])) {
                 <i class="fa-solid fa-list-check mr-3"></i>
                 Projects
             </a>
+            <a class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item cursor-pointer" id="QuestionsBtn">
+                <i class="fa-solid fa-circle-question mr-3"></i>
+                Questions
+            </a>
         </nav>
         <a href="logout.php" class="absolute w-full upgrade-btn bottom-0 active-nav-link text-white flex items-center justify-center py-4">
             <i class="fas fa-arrow-circle-up mr-3"></i>
@@ -244,7 +249,7 @@ if (isset($_SESSION['email'])) {
                         $projectID = $row['projectID'];
                         $scrumMasterID = $row['scrumMasterID'];
 
-                        $scrumMasterQuery = "SELECT * FROM users WHERE id = $scrumMasterID";
+                        $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $scrumMasterID";
                         $scrumMasterResult = $conn->query($scrumMasterQuery);
 
                         if ($scrumMasterResult->num_rows > 0) {
@@ -288,7 +293,7 @@ if (isset($_SESSION['email'])) {
                     // Check if the user is logged in
                     // User is logged in
                     $equipeID = $_SESSION['equipeID'];
-                    $sql = "SELECT projectID FROM teams WHERE id = $equipeID";
+                    $sql = "SELECT projectID FROM teams WHERE id_team = $equipeID";
 
                     $result = $conn->query($sql);
 
@@ -310,7 +315,7 @@ if (isset($_SESSION['email'])) {
                                 $projectsDateEnd = $projectsData['date_end'];
                                 $projectsStatus = $projectsData['statut'];
 
-                                $scrumMasterQuery = "SELECT * FROM users WHERE id = $projectsScrum";
+                                $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $projectsScrum";
                                 $scrumMasterResult = $conn->query($scrumMasterQuery);
 
                                 if ($scrumMasterResult->num_rows > 0) {
@@ -324,7 +329,7 @@ if (isset($_SESSION['email'])) {
                                     $scrumMasterLastName = 'N/A';
                                 }
 
-                                $prodMasterQuery = "SELECT * FROM users WHERE id = $projectsProd";
+                                $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
                                 $prodMasterResult = $conn->query($prodMasterQuery);
 
                                 if ($prodMasterResult->num_rows > 0) {
@@ -357,10 +362,12 @@ if (isset($_SESSION['email'])) {
                                 echo '<div>';
                                 echo '<a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 addBtn">';
                                 echo 'Assign';
-                                echo '<svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">';
-                                echo '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>';
                                 echo '</a>';
-                                echo '</svg>';
+                                echo '</div>';
+                                echo '<div>';
+                                echo '<a href="#" class="projectQue inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300" onclick="sendData(' . $projectsData['id_project'] . ')" data-id="' . $projectsData['id_project'] . '">';
+                                echo 'View project questions';
+                                echo '</a>';
                                 echo '</div>';
                                 echo '<div class="flex flex-col items-center">';
                                 echo "<p class='text-gray-500'>$projectsDateStart</p>";
@@ -392,7 +399,7 @@ if (isset($_SESSION['email'])) {
                         $teamImg = $row['image'];
                         $teamName = $row['teamName'];
                         $scrumMasterID = $row['scrumMasterID'];
-                        $teamId = $row['id'];
+                        $teamId = $row['id_team'];
 
                         echo '
                             <div class="w-full h-48 col-span-1 md:col-span-2 lg:col-span-5 bg-white border border-gray-200 rounded-lg shadow sticky top-0" style = "background-image: url(' . $teamImg . '); background-position-x: center; background-position-y: 20%; background-repeat: no-repeat; background-size: cover;">
@@ -408,7 +415,7 @@ if (isset($_SESSION['email'])) {
                             if ($MembersResult->num_rows > 0) {
                                 $MembersFirstName = $MembersData['firstName'];
                                 $MembersLastName = $MembersData['lastName'];
-                                $MembersID = $MembersData['id'];
+                                $MembersID = $MembersData['id_user'];
                                 $MembersImg = $MembersData['image'];
                                 if ($MembersData['role'] == 'user') {
                                     $MembersRole = "User";
@@ -468,7 +475,7 @@ if (isset($_SESSION['email'])) {
                 // Check if the user is logged in
                     // User is logged in
                     $equipeID = $_SESSION['equipeID'];
-                    $sql = "SELECT projectID FROM teams WHERE id = $equipeID";
+                    $sql = "SELECT projectID FROM teams WHERE id_team = $equipeID";
 
                     $result = $conn->query($sql);
 
@@ -490,7 +497,7 @@ if (isset($_SESSION['email'])) {
                                 $projectsDateEnd = $projectsData['date_end'];
                                 $projectsStatus = $projectsData['statut'];
 
-                                $scrumMasterQuery = "SELECT * FROM users WHERE id = $projectsScrum";
+                                $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $projectsScrum";
                                 $scrumMasterResult = $conn->query($scrumMasterQuery);
 
                                 if ($scrumMasterResult->num_rows > 0) {
@@ -504,7 +511,7 @@ if (isset($_SESSION['email'])) {
                                     $scrumMasterLastName = 'N/A';
                                 }
 
-                                $prodMasterQuery = "SELECT * FROM users WHERE id = $projectsProd";
+                                $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
                                 $prodMasterResult = $conn->query($prodMasterQuery);
 
                                 if ($prodMasterResult->num_rows > 0) {
@@ -583,7 +590,7 @@ if (isset($_SESSION['email'])) {
                             $MembersLastName = 'N/A';
                         }
                         echo '
-                            <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow memberSelect cursor-pointer transition-all" data-id="'. $MembersData['id'] .'">
+                            <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow memberSelect cursor-pointer transition-all" data-id="'. $MembersData['id_user'] .'">
                                 <div class="flex flex-col items-center py-2">
                                     <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="' . $MembersImg . '" alt="' . $MembersFirstName . ' ' . $MembersLastName . '"/>
                                     <h5 class="mb-1 text-xl font-medium text-'. $MembersColor .'-900">' . $MembersFirstName . ' ' . $MembersLastName . '</h5>
@@ -644,6 +651,17 @@ if (isset($_SESSION['email'])) {
                     </div>
                 </form>
             </main>
+            <main class="w-full flex flex-col p-6 hidden" id="QuestionsTable">
+            <div class="col-span-3 pb-6 flex flex-row justify-between">
+                <h1 class="text-3xl text-black">All questions</h1>
+                <a href="#" class="p-2 px-4 bg-blue-500 rounded text-white">My questions</a>
+            </div>
+            <div class="flex flex-col gap-5" id = "result">  
+
+            </div>
+            <div>
+
+            </div>
         </div>
         
     </div>

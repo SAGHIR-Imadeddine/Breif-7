@@ -1,25 +1,51 @@
 <?php
-    session_start();
-    include 'connection.php';
+session_start();
+include 'connection.php';
 
-    // Number of items per page
-    $items_per_page = 2;
+$items_per_page = 2;
 
-    // Current page (default to 1 if not set)
-    $page = isset($_POST['page_no']) ? $_POST['page_no'] : 1;
+$page = isset($_POST['page_no']) ? $_POST['page_no'] : 1;
+$offset = ($page - 1) * $items_per_page;
 
-    // Calculate the offset
-    $offset = ($page - 1) * $items_per_page;
+$myQuestions = isset($_POST['my_questions']) && $_POST['my_questions'] === 'true';
 
-    $query = "SELECT q.id_question, q.tittre AS title, q.description AS question_description, q.datecreation, u.image AS user_image, u.firstName AS user_firstName, u.lastName AS user_lastName
+$dateFilter = isset($_POST['date_filter']) ? $_POST['date_filter'] : 'recent';
+
+$projectId = isset($_POST['project_id']) ? $_POST['project_id'] : null;
+
+$query = "SELECT q.id_question, q.tittre AS title, q.description AS question_description, q.datecreation, u.image AS user_image, u.firstName AS user_firstName, u.lastName AS user_lastName
             FROM question q
             JOIN users u ON q.ID_User = u.id_user
-            WHERE Archif = 1
-            LIMIT $offset, $items_per_page";
+            WHERE Archif = 1";
 
-    $result = mysqli_query($conn, $query);
+if ($myQuestions) {
+    $query .= " AND q.ID_User = {$_SESSION['id']}";
+}
 
+if ($projectId) {
+    $query .= " AND q.ProjectID = $projectId";
+}
+
+if ($dateFilter === 'recent') {
+    $query .= " ORDER BY q.datecreation DESC";
+} else {
+    $query .= " ORDER BY q.datecreation ASC";
+}
+
+$query .= " LIMIT $offset, $items_per_page";
+
+$result = mysqli_query($conn, $query);
     if ($result) {
+        echo '<div class = "flex flex-row gap-4">';
+        if ($myQuestions) {
+            echo '<a href="#" id="myQuestionsLink" class="p-2 px-4 bg-blue-500 rounded text-white active"><i class="fa-solid fa-person-circle-question mr-2"></i>All questions</a>';
+        } else {
+            echo '<a href="#" id="myQuestionsLink" class="p-2 px-4 bg-blue-500 rounded text-white"><i class="fa-solid fa-person-circle-question mr-2"></i>My questions</a>';
+        }
+        echo '<button class="dateFilterButton p-2 px-4 bg-blue-500 rounded text-white" data-filter="recent"><i class="fa-solid fa-clock mr-2"></i>Recent</button>';
+        echo '<button class="dateFilterButton p-2 px-4 bg-blue-500 rounded text-white" data-filter="old"><i class="fa-solid fa-clock mr-2"></i>Old</button>';
+        echo '<button id = "allProjectsButton" class="p-2 px-4 bg-blue-500 rounded text-white" data-filter="old"><i class="fa-solid fa-clock mr-2"></i>All projects</button>';
+        echo '</div>';
         while ($row = mysqli_fetch_assoc($result)) {
             $questionId = $row['id_question'];
 
@@ -67,19 +93,29 @@
         }
         mysqli_free_result($result);
 
-        // Add pagination links
-        $pagination_query = "SELECT COUNT(*) as total_rows FROM question WHERE Archif = 1";
-        $pagination_result = mysqli_query($conn, $pagination_query);
-        $pagination_row = mysqli_fetch_assoc($pagination_result);
-        $total_rows = $pagination_row['total_rows'];
-        $total_pages = ceil($total_rows / $items_per_page);
+    $pagination_query = "SELECT COUNT(*) as total_rows FROM question q WHERE Archif = 1";
 
-        echo '<div class="pagination">';
-        for ($i = 1; $i <= $total_pages; $i++) {
-            echo '<a href="#" id="' . $i . '" class = "p-2 px-4 text-white bg-blue-500 rounded mr-2">' . $i . '</a>';
-        }
-        echo '</div>';
-    } else {
-        echo 'Error executing the main query: ' . mysqli_error($conn);
+    if ($myQuestions) {
+        $pagination_query .= " AND q.ID_User = {$_SESSION['id']}";
     }
+
+    if ($projectId) {
+        $pagination_query .= " AND q.ProjectID = $projectId";
+    }
+
+$pagination_result = mysqli_query($conn, $pagination_query);
+$pagination_row = mysqli_fetch_assoc($pagination_result);
+$total_rows = $pagination_row['total_rows'];
+$total_pages = ceil($total_rows / $items_per_page);
+
+echo '<div class="pagination">';
+for ($i = 1; $i <= $total_pages; $i++) {
+    ?>
+    <a href="#" id="<?= $i ?>" class="p-2 px-4 text-white bg-blue-500 rounded mr-2"><?= $i ?></a>
+    <?php
+}
+echo '</div>';
+} else {
+    echo 'Error executing the main query: ' . mysqli_error($conn);
+}
 ?>
