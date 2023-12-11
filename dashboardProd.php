@@ -42,6 +42,7 @@ if (isset($_SESSION['email'])) {
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="./js/prodOwner.js" defer></script>
     <script src="https://kit.fontawesome.com/736a1ef302.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -189,11 +190,17 @@ if (isset($_SESSION['email'])) {
                 <i class="fa-solid fa-list-check mr-3"></i>
                 Projects
             </a>
+          
+            <a class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item cursor-pointer" id="QuestionsBtn">
+                <i class="fa-solid fa-circle-question mr-3"></i>
+                Questions
+            </a>
 
             <button class="flex items-center active-nav-link text-white py-4 pl-6 nav-item cursor-pointer" id="statisticbutton">
                 <i class="fa-solid fa-chart-simple mr-3"></i>
                 STATISTICS
             </button>
+          
         </nav>
         <a href="logout.php" class="absolute w-full upgrade-btn bottom-0 active-nav-link text-white flex items-center justify-center py-4">
             <i class="fas fa-arrow-circle-up mr-3"></i>
@@ -260,8 +267,6 @@ if (isset($_SESSION['email'])) {
 
                 <?php
                 include 'connection.php';
-
-                // Check if the user is logged in
                 // User is logged in
                 $equipeID = $_SESSION['equipeID'];
                 $currentMemberID = $_SESSION['id'];
@@ -324,6 +329,10 @@ if (isset($_SESSION['email'])) {
 
                 $result = $conn->query($sql);
 
+
+                                $scrumMasterQuery = "SELECT * FROM users WHERE id_user = $projectsScrum";
+                                $scrumMasterResult = $conn->query($scrumMasterQuery);
+
                 while ($row = $result->fetch_assoc()) {
                     $projectID = $row['projectID'];
                     $currentMemberID = $_SESSION['id'];
@@ -356,8 +365,10 @@ if (isset($_SESSION['email'])) {
                                 $scrumMasterLastName = 'scrum master.';
                             }
 
-                            $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
-                            $prodMasterResult = $conn->query($prodMasterQuery);
+
+                                $prodMasterQuery = "SELECT * FROM users WHERE id_user = $projectsProd";
+                                $prodMasterResult = $conn->query($prodMasterQuery);
+
 
                             if ($prodMasterResult->num_rows > 0) {
                                 $prodMasterData = $prodMasterResult->fetch_assoc();
@@ -370,50 +381,43 @@ if (isset($_SESSION['email'])) {
                                 $prodMasterLastName = 'N/A';
                             }
 
-                            echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">';
-                            echo '<a href="#">';
-                            echo "<img class='rounded-t-lg' src='$projectsImg' alt='' />";
-                            echo '</a>';
-                            echo '<div class="p-5">';
-                            echo '<div class="flex justify-between">';
-                            echo '<a href="#" class="flex flex-col">';
-                            echo "<h5 class='text-2xl font-bold tracking-tight text-gray-900'>$projectsName</h5>";
-                            echo "<p class='text-red-900'><i class='fa-solid fa-user-gear pr-2'></i>$prodMasterFirstName $prodMasterLastName</p>";
-                            echo "<p class='mb-4 text-green-900'><i class='fa-solid fa-user-pen pr-2'></i>$scrumMasterFirstName $scrumMasterLastName</p>";
-                            echo '</a>';
-                            echo '';
-                            echo "<img src='$prodMasterImg' alt='' class='w-[14%] h-[14%] rounded-full border-2 border-red-700 relative'>";
-                            echo '</div>';
-                            echo "<p class='mb-3 font-normal text-gray-700'>$projectsDesc</p>";
-                            echo '<div class="flex flex-row items-center justify-between">';
-                            echo '<div class = "flex flex-col gap-2">';
-                            echo '<div class = "flex flex-row gap-2">';
-                            echo '<div>';
-                            echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 addBtn">';
-                            echo '<i class="fa-solid fa-user-pen mr-2"></i>Assign';
-                            echo '</a>';
-                            echo '</div>';
-                            echo '<div>';
-                            echo '<a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:ring-4 focus:outline-none focus:ring-orange-300 modifyBtn" data-id="' . $projectsData['id_project'] . '">';
-                            echo '<i class="fa-solid fa-gear mr-2"></i>Modify';
-                            echo '</a>';
-                            echo '</div>';
-                            echo '</div>';
-                            echo '<div>';
-                            echo '<a href="deleteProject.php?id=' . $projectsData['id_project'] . '" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 addBtn">';
-                            echo '<i class="fa-solid fa-trash mr-2"></i>Delete';
-                            echo '</a>';
-                            echo '</div>';
-                            echo '</div>';
-                            echo '<div class="flex flex-col items-center">';
-                            echo "<p class='text-gray-500'>$projectsDateStart</p>";
-                            echo "<p class='text-gray-500'>$projectsDateEnd</p>";
-                            if ($projectsStatus == 'Active') {
-                                echo '<p class="text-green-500">Active</p>';
-                            }
-                            echo '</div>';
-                            echo '</div>';
-                            echo '</div>';
+
+                                echo '<div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">';
+                                echo '<a href="#">';
+                                echo "<img class='rounded-t-lg' src='$projectsImg' alt='' />";
+                                echo '</a>';
+                                echo '<div class="p-5">';
+                                echo '<div class="flex justify-between">';
+                                echo '<a href="#" class="flex flex-col">';
+                                echo "<h5 class='text-2xl font-bold tracking-tight text-gray-900'>$projectsName</h5>";
+                                echo "<p class='text-red-900'><i class='fa-solid fa-user-gear pr-2'></i>$prodMasterFirstName $prodMasterLastName</p>";
+                                echo "<p class='mb-4 text-green-900'><i class='fa-solid fa-user-pen pr-2'></i>$scrumMasterFirstName $scrumMasterLastName</p>";
+                                echo '</a>';
+                                echo '';
+                                echo "<img src='$prodMasterImg' alt='' class='w-[14%] h-[14%] rounded-full border-2 border-red-700 relative'>";
+                                echo '</div>';
+                                echo "<p class='mb-3 font-normal text-gray-700'>$projectsDesc</p>";
+                                echo '<div class="flex flex-row items-center justify-between">';
+                                echo '<div>';
+                                echo '<a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 addBtn">';
+                                echo 'Assign';
+                                echo '</a>';
+                                echo '</div>';
+                                echo '<div>';
+                                echo '<a href="#" class="projectQue inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300" onclick="sendData(' . $projectsData['id_project'] . ')" data-id="' . $projectsData['id_project'] . '">';
+                                echo 'View project questions';
+                                echo '</a>';
+                                echo '</div>';
+                                echo '<div class="flex flex-col items-center">';
+                                echo "<p class='text-gray-500'>$projectsDateStart</p>";
+                                echo "<p class='text-gray-500'>$projectsDateEnd</p>";
+                                if ($projectsStatus == 'Active') {
+                                    echo '<p class="text-green-500">Active</p>';
+                                }
+                                echo '</div>';
+                                echo '</div>';
+                                echo '</div>';
+
                             echo '</div>';
                         }
                     } else {
@@ -430,13 +434,14 @@ if (isset($_SESSION['email'])) {
                 $equipeID = $_SESSION['equipeID'];
                 $sql = "SELECT * FROM teams";
 
-                $result = $conn->query($sql);
 
-                while ($row = $result->fetch_assoc()) {
-                    $teamImg = $row['image'];
-                    $teamName = $row['teamName'];
-                    $scrumMasterID = $row['scrumMasterID'];
-                    $teamId = $row['id_team'];
+                    while ($row = $result->fetch_assoc()) {
+                        $teamImg = $row['image'];
+                        $teamName = $row['teamName'];
+                        $scrumMasterID = $row['scrumMasterID'];
+                        $teamId = $row['id_team'];
+
+                $result = $conn->query($sql);
 
                     echo '
                             <div class="w-full h-48 col-span-1 md:col-span-2 lg:col-span-5 bg-white border border-gray-200 rounded-lg shadow sticky top-0" style = "background-image: url(' . $teamImg . '); background-position-x: center; background-position-y: 20%; background-repeat: no-repeat; background-size: cover;">
@@ -444,6 +449,7 @@ if (isset($_SESSION['email'])) {
                                     <p class = "text-white text-center">' . $teamName . '</p>
                                 </div>
                             </div>';
+
 
                     $MembersQuery = "SELECT * FROM users WHERE equipeID = $teamId";
                     $MembersResult = $conn->query($MembersQuery);
@@ -466,6 +472,7 @@ if (isset($_SESSION['email'])) {
                                 $MembersRole = "Product Owner";
                                 $MembersIcon = "fa-solid fa-user-gear pr-2";
                                 $MembersColor = "red";
+
                             }
                         } else {
                             // Handle the case where the scrum master is not found
@@ -671,7 +678,7 @@ if (isset($_SESSION['email'])) {
                             $MembersLastName = 'N/A';
                         }
                         echo '
-                            <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow memberSelect cursor-pointer transition-all" data-id="' . $MembersData['id_user'] . '">
+                            <div class="w-full max-w-sm bg-white border border-gray-100 rounded-lg shadow memberSelect cursor-pointer transition-all" data-id="'. $MembersData['id_user'] .'">
                                 <div class="flex flex-col items-center py-2">
                                     <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="' . $MembersImg . '" alt="' . $MembersFirstName . ' ' . $MembersLastName . '"/>
                                     <h5 class="mb-1 text-xl font-medium text-' . $MembersColor . '-900">' . $MembersFirstName . ' ' . $MembersLastName . '</h5>
@@ -732,6 +739,17 @@ if (isset($_SESSION['email'])) {
                     </div>
                 </form>
             </main>
+            <main class="w-full flex flex-col p-6 hidden" id="QuestionsTable">
+            <div class="col-span-3 pb-6 flex flex-row justify-between">
+                <h1 class="text-3xl text-black">All questions</h1>
+                <a href="#" class="p-2 px-4 bg-blue-500 rounded text-white">My questions</a>
+            </div>
+            <div class="flex flex-col gap-5" id = "result">  
+
+            </div>
+            <div>
+
+            </div>
         </div>
 
     </div>
