@@ -34,6 +34,8 @@ if ($dateFilter === 'recent') {
 
 $query .= " LIMIT $offset, $items_per_page";
 
+echo $query;
+
 $result = mysqli_query($conn, $query);
     if ($result) {
         echo '<div class = "flex flex-row gap-4">';

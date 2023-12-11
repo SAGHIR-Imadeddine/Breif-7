@@ -358,8 +358,6 @@ $myID = $_SESSION["id"];
                                                                         <span class="text-red-500"><?= $dislikeCount ?> Dislikes</span>                                                              
                                                                     </form>
 
-                                                                    <input type="checkbox" id="correctAnswer<?= $questionData['id_reponse'] ?>" name="correctAnswer" value="1">
-                                                                    <label for="">Mark as Correct</label>
                                                                     <?php
                                                                         if ($myID == $questionData['uIdRep']){
                                                                         echo "<div class='justify-self-end'>

@@ -1,14 +1,6 @@
 <?php
 session_start();
-
-function dd($data)
-{
-    echo '<pre>';
-    print_r($data);
-    echo '</pre>';
-    exit; 
-}
-
+include 'connection.php';
 
 $idproject = 0;
 $iduser = 0;
@@ -18,6 +10,40 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
     $iduser = $_GET["iduser"];
 }
 
+?>
+                    <?php
+
+
+if (isset($_POST["submit_question"])) {
+
+    $title = $_POST['titre'];
+
+    $description = $_POST['description'];
+
+    $tagsId = $_POST['tagIds'];
+    $explodedTags = explode(",", $tagsId);
+
+    $insertQuestionQuery = "INSERT INTO question(datecreation,ID_User,tittre, description, Archif, ProjectID) VALUES (current_date(),'$iduser','$title','$description', 1, '$idproject')";
+    $result = mysqli_query($conn, $insertQuestionQuery);
+    $idquestion = mysqli_insert_id($conn);
+    $sqlSelectAll = "SELECT id_tag FROM tag";
+    $resultAll = $conn->query($sqlSelectAll);
+    
+    if ($resultAll) {
+        $allTagIds = [];
+        while ($row = $resultAll->fetch_assoc()) {
+            $allTagIds[] = $row['id_tag'];
+        }
+    }
+    $existedTagsIds = array_intersect($allTagIds, $explodedTags);
+    foreach ($existedTagsIds as $tagId) {
+        $tablepivot = "INSERT INTO tagquetion VALUES('$idquestion','$tagId')";
+        $conn->query($tablepivot);
+    }
+
+    Header ("Location: dashboardUser.php");
+
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -157,6 +183,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
     <aside class="relative bg-sidebar h-screen w-64 hidden sm:block shadow-xl">
         <div class="p-6">
             <a class="text-white text-3xl font-semibold uppercase hover:text-gray-300"><img src="./img/white3.png" alt=""></a>
+           
         </div>
         <nav class="text-white text-base font-semibold pt-3">
             <a class="flex items-center active-nav-link text-white py-4 pl-6 nav-item cursor-pointer" id="TeamsBtn">
@@ -183,16 +210,12 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
     </aside>
 
     <div class="w-full flex flex-col h-screen overflow-y-hidden">
-
-        <!-- Desktop Header -->
-
+       
         <header class="w-full items-center bg-blue-950 py-2 px-6 hidden sm:flex">
             <div class="w-1/2"></div>
             <div x-data="{ isOpen: false }" class="relative w-1/2 flex justify-end">
                 <button @click="isOpen = !isOpen" class="realtive z-10 w-12 h-12 rounded-full overflow-hidden border-4 border-gray-400 hover:border-gray-300 focus:border-gray-300 focus:outline-none">
-
-                    <!-- <img src="./img/abdellah.png"> -->
-
+                 
                     <?php
                     include 'connection.php';
 
@@ -209,9 +232,6 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
             </div>
         </header>
 
-
-        <!-- Mobile Header & Nav -->
-
         <header x-data="{ isOpen: false }" class="w-full bg-sidebar py-5 px-6 sm:hidden">
             <div class="flex items-center justify-between">
                 <a href="index.html" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">DATAWARE</a>
@@ -221,8 +241,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                 </button>
             </div>
 
-
-            <!-- Dropdown Nav -->
+            
             <nav :class="isOpen ? 'flex': 'hidden'" class="flex flex-col pt-4">
                 <a class="flex items-center active-nav-link text-white py-2 pl-4 nav-item" id="TeamsBtn2">
                     <i class="fa-solid fa-users mr-3"></i>
@@ -236,7 +255,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                     <i class="fas fa-sign-out-alt mr-3"></i> Sign Out
                 </button>
             </nav>
-
+          
         </header>
 
         <div class="w-full overflow-x-hidden border-t flex flex-col">
@@ -310,58 +329,6 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
             </main>
             <section class="formajouterquestion  fixed inset-0 bg-gray-500 bg-opacity-75 overflow-y-auto blur-10 w-full h-[100vh]">
                 <div class="flex items-center justify-center  min-h-screen">
-                    <?php
-
-
-                    if (isset($_POST["submit_question"])) {
-
-                        $title = $_POST['titre'];
-
-                        $description = $_POST['description'];
-
-                        $tagsId = $_POST['tagIds'];
-                        $explodedTags = explode(",", $tagsId);
-
-                        $insertQuestionQuery = "INSERT INTO question(datecreation,ID_User,tittre, description,id_project) VALUES (current_date(),'$iduser','$title','$description','$idproject')";
-                        $result = mysqli_query($conn, $insertQuestionQuery);
-                        $idquestion = mysqli_insert_id($conn);
-                        $sqlSelectAll = "SELECT id_tag FROM tag";
-                        $resultAll = $conn->query($sqlSelectAll);
-
-                        if ($resultAll) {
-                            $allTagIds = [];
-                            while ($row = $resultAll->fetch_assoc()) {
-                                $allTagIds[] = $row['id_tag'];
-                            }
-                        }
-                        $existedTagsIds = array_intersect($allTagIds, $explodedTags);
-                        foreach ($existedTagsIds as $tagId) {
-                            $tablepivot = "INSERT INTO tagquetion VALUES('$idquestion','$tagId')";
-                            $conn->query($tablepivot);
-                        }
-
-                        if (count($existedTagsIds) > 0) {
-                            echo '<script>
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Success",
-                                    text: "Question added successfully!",
-                                });
-                            </script>';
-                        } else {
-                            echo '<script>
-                                Swal.fire({
-                                    icon: "warning",
-                                    title: "Warning",
-                                    text: "Question did not insert.",
-                                });
-                            </script>';
-                        }
-                    } else {
-                        echo '<script>alert("Error fetching tags: ' . $conn->error . '");</script>';
-
-                    }
-                    ?>
                     <form class="w-[70%]" action="" method="post">
                         <div class="w-[80%] p-12 z-10 mx-[10%] bg-white">
 
@@ -372,7 +339,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                             </div>
 
 
-                            <input type="text" name="tagIds" id="tagIds" class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm" placeholder="Titre">
+                            <input type="text" name="tagIds" id="tagIds" class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm hidden" placeholder="Titre">
 
                             <div class="mt-2 border border-gray-300 rounded-md px-3 relative">
                                 <label for="tags" class="block text-sm font-medium text-gray-700 absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium">Tags</label>
@@ -385,7 +352,6 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                 <textarea rows="8" name="description" id="description" class="block w-full border-2 border-gray-300 rounded-md py-1 resize-none placeholder-gray-500 focus:ring-0 pl-2 sm:text-sm" placeholder="Write a description..."></textarea>
                             </div>
 
-
                             <a href="dashboardUser.php">
                                 <input id="Submit_Question"class="hover:bg-green-400 p-2 mt-2 text-center text-black text-xs font-medium bg-gray-200 rounded-full" name="submit_question" type="submit" value="Submit Question">
                 </a>
@@ -394,6 +360,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                     </form>
                 </div>
             </section>
+
 
         </div>
 
@@ -429,11 +396,7 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-
-                                console.log("sdcfvghbjnk,")
-
                                 
-
                                 const tagElement = document.createElement("div");
                                 tagElement.className = "bg-blue-500 text-white p-1 rounded-md m-1";
                                 tagElement.textContent = lastTag;
@@ -442,10 +405,9 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                 removeButton.className = "ml-1 text-xs";
                                 removeButton.textContent = "Remove";
                                 removeButton.addEventListener("click", function(event) {
-
-                                    event.preventDefault(); // Prevent the default behavior of the button click
+                                    event.preventDefault(); 
                                     console.log(`tagID=${data.tagID}`);
-                                    // Make an AJAX request to remove the &tag from the database
+                                   
                                     fetch("remove_tag.php", {
                                             method: "POST",
                                             headers: {
@@ -457,12 +419,12 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                         .then(data => {
                                             if (data.success) {
 
-                                                // Remove the tag element from the container       
+                                               
                                                 tagsContainer.removeChild(tagElement);
                                                 Swal.fire({
                                                 icon: "success",
                                                 title: "Tag Deleted Successfully",
-                                                showConfirmButton: false,// button
+                                                showConfirmButton: false,
                                                 timer: 1500
                                                 });
                                             } else {
@@ -474,15 +436,12 @@ if (isset($_GET["idproject"]) && isset($_GET["iduser"])) {
                                         });
                                 });
 
-
-                                // Append the remove button to the tag element
+                             
                                 tagElement.appendChild(removeButton);
 
-                                // Append the tag element to the tags container
                                 tagsContainer.appendChild(tagElement);
 
-                                // Clear the input field
-
+                     
                                 tagsInput.value = "";
                             } else {
                                 console.error("Error inserting tag:", data.message);

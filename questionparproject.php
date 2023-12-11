@@ -3,7 +3,7 @@ include 'connection.php';
 // Récupération des projets avec le nombre de questions
 $query = "SELECT p.id_project, p.name AS project_name, COUNT(q.id_question) AS question_count
           FROM projects p
-          LEFT JOIN question q ON p.id_project = q.id_project
+          LEFT JOIN question q ON p.id_project = q.ProjectID
           GROUP BY p.id_project, p.name";
 $result = mysqli_query($conn, $query);
 
@@ -32,7 +32,7 @@ if ($result) {
 // Récupération des projets avec le plus grand nombre de questions (top 3)
 $queryTopProjects = "SELECT p.id_project, p.name AS project_name, COUNT(q.id_question) AS question_count
                      FROM projects p
-                     LEFT JOIN question q ON p.id_project = q.id_project
+                     LEFT JOIN question q ON p.id_project = q.ProjectID
                      GROUP BY p.id_project, p.name
                      ORDER BY question_count DESC
                      LIMIT 3";
@@ -62,7 +62,7 @@ if ($resultTopProjects) {
 // Récupération du projet avec le moins de questions
 $queryMinQuestions = "SELECT p.id_project, p.name AS project_name, COUNT(q.id_question) AS question_count
                       FROM projects p
-                      LEFT JOIN question q ON p.id_project = q.id_project
+                      LEFT JOIN question q ON p.id_project = q.ProjectID
                       GROUP BY p.id_project, p.name
                       ORDER BY question_count ASC
                       LIMIT 1";
@@ -123,3 +123,4 @@ if ($resultTopUser) {
 
 mysqli_close($conn);
 ?>
+
