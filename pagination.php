@@ -13,7 +13,7 @@ $dateFilter = isset($_POST['date_filter']) ? $_POST['date_filter'] : 'recent';
 
 $projectId = isset($_POST['project_id']) ? $_POST['project_id'] : null;
 
-$query = "SELECT q.id_question, q.tittre AS title, q.description AS question_description, q.datecreation, u.image AS user_image, u.firstName AS user_firstName, u.lastName AS user_lastName
+$query = "SELECT q.id_question, q.tittre AS title, q.description AS question_description, q.datecreation, u.image AS user_image, u.firstName AS user_firstName, u.lastName AS user_lastName, u.id_user
             FROM question q
             JOIN users u ON q.ID_User = u.id_user
             WHERE Archif = 1";
@@ -68,7 +68,9 @@ $result = mysqli_query($conn, $query);
                 <a href="Answers.php?question_id=<?= $questionId ?>" class="questionDiv p-2 px-4 bg-blue-500 rounded text-white questionDiv">Answers</a>
 
                 <?php
-                    if($user == $row['ID_User']){
+                    $user = $_SESSION['id'];
+
+                    if($user == $row['id_user']){
                         echo "<a href='modifQST.php?qst_id={$row['id_question']}' class='questionDiv p-2 px-4 bg-orange-500 rounded text-white questionDiv'>modifier</a>
                               <a href='./delQST.php?qst_id={$row['id_question']}'  class='questionDiv p-2 px-4 bg-red-600 rounded text-white questionDiv'>supprimer</a>";
                     }
