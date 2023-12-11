@@ -43,6 +43,7 @@ function toggleProjects() {
     createTeam.classList.add("hidden");
 }
 
+
 function toggleTeams() {
     teamsBtn.className = "flex items-center active-nav-link text-white py-4 pl-6 nav-item cursor-pointer";
     teamsBtn2.className = "flex items-center active-nav-link text-white py-4 pl-6 nav-item cursor-pointer";
