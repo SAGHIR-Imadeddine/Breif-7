@@ -11,8 +11,8 @@
 
 <p align="center">
   <a href="#collaborators">Collaborators</a> •
-  <a href="#how-to-use">Key Features</a> •
-  <a href="#download">Screenshots</a>
+  <a href="#key-features">Key Features</a> •
+  <a href="#screenshots">Screenshots</a>
 </p>
 
 ![screenshot](https://cdn.discordapp.com/attachments/1181950457812373659/1183784218485080074/image.png?ex=658997f7&is=657722f7&hm=e0d674533437ee32b3edaf4b0eac0e4b7f88857d7e42e207201ce832700f2006&)
