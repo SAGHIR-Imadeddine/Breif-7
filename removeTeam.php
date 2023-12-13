@@ -26,7 +26,7 @@ if (isset($_GET['id'])) {
             echo "Cannot delete the team. There are users in the team.";
         } else {
             // No users in the team, proceed with team deletion
-            $sqlDeleteTeam = "DELETE FROM teams WHERE id = ?";
+            $sqlDeleteTeam = "DELETE FROM teams WHERE id_team = ?";
             $stmtDeleteTeam = $conn->prepare($sqlDeleteTeam);
 
             if ($stmtDeleteTeam) {
@@ -36,6 +36,7 @@ if (isset($_GET['id'])) {
                 // Check if deletion was successful
                 if ($stmtDeleteTeam->affected_rows > 0) {
                     echo "Team deleted successfully.";
+                    Header ("Location: dashboardScrum.php");
                 } else {
                     echo "Failed to delete the team.";
                 }

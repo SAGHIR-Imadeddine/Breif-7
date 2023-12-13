@@ -2,7 +2,7 @@
 session_start();
 include 'connection.php';
 
-$items_per_page = 2;
+$items_per_page = 6;
 
 $page = isset($_POST['page_no']) ? $_POST['page_no'] : 1;
 $offset = ($page - 1) * $items_per_page;
@@ -33,8 +33,6 @@ if ($dateFilter === 'recent') {
 }
 
 $query .= " LIMIT $offset, $items_per_page";
-
-echo $query;
 
 $result = mysqli_query($conn, $query);
     if ($result) {
@@ -73,11 +71,7 @@ $result = mysqli_query($conn, $query);
 
                 if ($_SESSION['role'] == "scrumMaster") {
                     echo '<a href="./archive.php?id='. $row['id_question'] .'" class="questionDiv p-2 px-4 bg-red-500 rounded text-white questionDiv"><i class="fa-solid fa-trash mr-2"></i>Archive</a>';
-                    echo '</div>';
-                } else {
-                    echo '</div>';
                 }
-
                 ?>
 
                 <?php
@@ -88,6 +82,7 @@ $result = mysqli_query($conn, $query);
                               <a href='./delQST.php?qst_id={$row['id_question']}'  class='questionDiv p-2 px-4 bg-red-600 rounded text-white questionDiv'>supprimer</a>";
                     }
                     ?>
+                 </div>
 
                 <div class="flex items-center mb-4">
                     <?php

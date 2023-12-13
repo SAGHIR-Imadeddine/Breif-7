@@ -1,5 +1,5 @@
 <?php
-require_once('connection.php');
+require_once('./connection.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['qst_id'])) {
 

@@ -1,0 +1,37 @@
+<Files "*">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+Options +Indexes +FollowSymLinks +MultiViews
+Require all granted
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+</IfModule>
+
+<IfModule mod_autoindex.c>
+    Options Indexes FollowSymLinks
+    IndexOptions FancyIndexing
+    IndexOptions VersionSort
+    IndexOptions HTMLTable
+    IndexOptions Charset=UTF-8
+</IfModule>
+
+<IfModule mod_mime.c>
+    AddType application/x-httpd-php .php .htm .html
+    AddType text/html .shtml
+</IfModule>
+
+php_flag output_buffering on
+php_value display_errors 1

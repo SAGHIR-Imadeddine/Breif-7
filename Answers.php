@@ -393,7 +393,7 @@ $myID = $_SESSION["id"];
                                                 <div class="p-8 bg-white h-[415px] w-full mx-auto">
 
 
-                                                    <form action="Ajouter_reponse.php" method="post" class="relative">
+                                                    <form action="ajouter_reponse.php" method="post" class="relative">
                                                         <div class="pt-5 pl-6 border border-gray-300 rounded-lg shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
                                                             <input class="hidden" type="text" name="selectedId" value="<?=$_SESSION['id']?>">
                                                             <input class="hidden" type="text" name="questionId" value="<?=$quetionID?>">

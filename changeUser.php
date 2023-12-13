@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         include 'connection.php';
 
         // Update the 'roles' column in the 'users' table
-        $sql = "UPDATE users SET role = '$selectedRole' WHERE id = $userId";
+        $sql = "UPDATE users SET role = '$selectedRole' WHERE id_user = $userId";
 
         echo $selectedRole;
         echo $userId;

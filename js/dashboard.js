@@ -144,6 +144,13 @@ $(document).on("click", ".pagination a", function () {
     showdata(page, currentDateFilter, currentProjectId);
 });
 
+// document.querySelectorAll(".pagination a").forEach((event) => {
+//     event.addEventListener("click", () => {
+//         var page = this.getAttribute("id");
+//         showdata(page, currentDateFilter, currentProjectId);
+//     })
+// })
+
 $(document).on("click", "#myQuestionsLink", function () {
     $(this).toggleClass("active");
     var page = 1;

@@ -4,7 +4,6 @@ include 'connection.php';
 if (isset($_GET['id'])) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
     $function = mysqli_real_escape_string($conn, $_GET['function']);
-
     $sql = "UPDATE reponse SET correct = $function WHERE id_reponse = $id";
 
     if ($conn->query($sql) === TRUE) {
