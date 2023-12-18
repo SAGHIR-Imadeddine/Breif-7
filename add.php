@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selectedMember = $_POST['selectedMember'];
 
     // Perform the update operation
-    $updateSql = "UPDATE users SET equipeID = ? WHERE id = ?";
+    $updateSql = "UPDATE users SET equipeID = ? WHERE id_user = ?";
 
     // Use prepared statements to prevent SQL injection
     $stmt = $conn->prepare($updateSql);

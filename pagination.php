@@ -2,7 +2,7 @@
 session_start();
 include 'connection.php';
 
-$items_per_page = 6;
+$items_per_page = 2;
 
 $page = isset($_POST['page_no']) ? $_POST['page_no'] : 1;
 $offset = ($page - 1) * $items_per_page;
