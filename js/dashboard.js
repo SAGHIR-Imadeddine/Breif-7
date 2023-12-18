@@ -124,7 +124,7 @@ function showdata(page, dateFilter, projectId) {
     currentDateFilter = dateFilter;
 
     $.ajax({
-        url: 'pagination.php',
+        url: './pagination.php',
         method: 'post',
         data: { page_no: page, my_questions: myQuestions, date_filter: dateFilter, project_id: projectId },
         success: function (result) {
@@ -143,13 +143,6 @@ $(document).on("click", ".pagination a", function () {
     var page = $(this).attr('id');
     showdata(page, currentDateFilter, currentProjectId);
 });
-
-// document.querySelectorAll(".pagination a").forEach((event) => {
-//     event.addEventListener("click", () => {
-//         var page = this.getAttribute("id");
-//         showdata(page, currentDateFilter, currentProjectId);
-//     })
-// })
 
 $(document).on("click", "#myQuestionsLink", function () {
     $(this).toggleClass("active");
